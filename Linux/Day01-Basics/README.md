@@ -102,4 +102,71 @@ File & Directory
 
    
   File Operations
-  
+
+1. cp – Copy files 
+
+        cp file.txt backup.txt
+
+2. mv – Move/rename file
+
+        mv file.txt newfile.txt
+
+3. cat - View file content
+
+         cat file.txt
+   
+4. head / tail – First/last lines
+   
+        tail -f app.log
+
+
+   Search & Text Processing
+
+1. grep – Search text
+
+        grep "error" app.log
+
+2. find – Find files. Searches for files/directories based on name, size, type, time, etc.
+
+        find /home -name "file.txt"
+        find /var/log -name "*.log"
+
+4. awk – Text processing. Processes and extracts data from text (column-wise)
+
+         awk '{print $1}' file.txt
+
+
+   Process & System
+   
+1. ps – Show processes
+   
+        ps aux
+
+2. top – Live system monitoring
+
+         top
+
+3. kill – Stop process
+
+         kill -9 1234
+
+
+   Disk & Memory
+
+1. df – Disk usage
+   
+       df -h
+   
+2. du – Directory size
+
+       du -sh *
+   
+3. free – Memory usage
+
+       free -m
+
+   Permissions & Users
+
+1. chmod - Change Permissions
+
+       chmod 755 script.sh
