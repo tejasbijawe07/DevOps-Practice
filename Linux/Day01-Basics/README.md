@@ -5,7 +5,6 @@ Topics Covered:
 - How processes are created and managed.
 - What systemd does.
 - Basic Linux commands.
-- Basic Networking commands.
 -----
 
 ## Core Components
