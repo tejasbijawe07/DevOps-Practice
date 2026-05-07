@@ -72,36 +72,6 @@ This repository tracks daily hands-on learning and progress towards becoming a *
 
 ---
 
-## 📅 Progress Tracker
-
-###  Linux
-
-* [x] Day 01 - Linux Basics
-* [ ] Day 02 - Linux Commands
-* [ ] Day 03 - Process Management
-
-###  Git
-
-* [ ] Day 04 - Git Basics
-* [ ] Day 05 - Branching & Merging
-
-###  Docker
-
-* [ ] Day 10 - Docker Basics
-* [ ] Day 11 - Docker Volumes
-
-###  Kubernetes
-
-* [ ] Day 20 - Pods
-* [ ] Day 21 - Deployments
-
-###  CI/CD
-
-* [ ] Day 30 - Jenkins
-* [ ] Day 31 - GitHub Actions
-
----
-
 ## 📈 Goal
 
 By the end of 90 days, I aim to:
