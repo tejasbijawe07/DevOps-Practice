@@ -176,3 +176,20 @@ Check logs
 `journalctl -u cron -n 50` - Last 50 log lines.
 
 `tail -n 50 /var/log/syslog` - Read log file manually.
+
+---
+Summary Table:
+
+| Category    | Command               | Purpose                |
+| ----------- | --------------------- | ---------------------- |
+| Environment | `uname -a`            | Kernel/system info     |
+| Environment | `cat /etc/os-release` | OS details             |
+| Filesystem  | `mkdir/cp/ls`         | File operations        |
+| CPU/Memory  | `free -h`             | Memory usage           |
+| CPU/Memory  | `ps`                  | Process resource usage |
+| Disk        | `df -h`               | Disk space             |
+| Disk        | `du -sh`              | Directory size         |
+| Network     | `ss -tulpn`           | Listening ports        |
+| Network     | `curl -I`             | HTTP/service check     |
+| Logs        | `tail`                | Recent log entries     |
+| Logs        | `journalctl`          | Service logs           |
