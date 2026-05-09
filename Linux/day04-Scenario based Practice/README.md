@@ -47,5 +47,37 @@ Find the largest log files/directories inside /var/log:
 
 ----
 
+Scenario 1: Service Not Starting
 
+    A web application service called 'nginx' failed to start after a server reboot.
+    What commands would you run to diagnose the issue?
+
+
+ Step 1: Check service status
+
+     systemctl status nginx
+     
+   Why?: It shows if the service is active, failed, or stopped.
+
+ Step 2: If service not found, list all services
+
+     systemctl list-units --type=service
+
+   Why?: To check what services exist on the system.
+
+ Step 3: Check the logs
+
+    journalctl -u nginx -n 50
+
+   Why?: It shows the last 50 log entries.
+
+ Step 4: Check if service is enabled to start on boot
+
+    systemctl is-enabled nginx
+
+   Why?: To know if it will start automatically after reboot.
+
+---
+
+ Scenario 2: High CPU Usage
 
