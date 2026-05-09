@@ -112,3 +112,50 @@ Scenario 3: Finding Service Logs
     A developer asks: "Where are the logs for the 'docker' service?"
     The service is managed by systemd.
     What commands would you use?
+
+Step 1: Check service status first
+
+     systemctl status cron
+
+Why?: It shows if the service is active, failed, or stopped.
+
+Step 2: View logs
+
+    journalctl -u cron -n 50
+
+Why?: -n to view last 50 lines of logs.
+
+Step 3: logs in real-time
+
+    journalctl -u cron -f
+
+Why?: To follow logs in real-time.
+
+---
+
+Scenario 4: File Permissions Issue
+
+    A script at /home/user/backup.sh is not executing.
+    When you run it: ./backup.sh
+    You get: "Permission denied"
+
+
+ Step 1: Check current permissions
+
+      ls -l /home/user/backup.sh
+
+Why?: Look for: -rw-r--r-- (notice no 'x' = not executable)
+
+ Step 2: Add execute permission
+
+      chmod +x /home/user/backup.sh
+
+Step 3: Verify if worked
+
+      ls -l /home/user/backup.sh
+      
+Why?: Look for: -rwxr-xr-x (notice 'x' = executable)
+
+Step 4: Running the script
+ 
+      ./backup.sh
