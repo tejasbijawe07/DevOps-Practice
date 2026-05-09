@@ -81,3 +81,34 @@ Scenario 1: Service Not Starting
 
  Scenario 2: High CPU Usage
 
+    Your manager reports that the application server is slow.
+    You SSH into the server. What commands would you run to identify
+    which process is using high CPU?
+
+  Step 1: List the processes
+
+     top
+
+  Why?: To check different processes and their live CPU usages.
+
+  Step 2: Sort the processes by CPU usage
+
+    ps aux --sort=-%cpu | head -10
+
+     | Commands       | Meaning                                         |
+     | ------         | ----------------------------                    |
+     | `ps aux`       | Lists all running processes                     |
+     | `--sort=-%cpu` | Sort processes by CPU usage in descending order,
+                        - means descending,
+                        %cpu means sort using CPU usage                 |
+     | `| head -10`   | Show only first 10 lines.                       |
+  
+  Why?: Shows top CPU-consuming processes.
+
+---
+
+Scenario 3: Finding Service Logs
+
+    A developer asks: "Where are the logs for the 'docker' service?"
+    The service is managed by systemd.
+    What commands would you use?
