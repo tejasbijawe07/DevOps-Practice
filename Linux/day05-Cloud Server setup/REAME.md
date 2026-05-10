@@ -10,7 +10,7 @@ Deploy a real web server on the cloud and learn practical server management.
 
 ---
 
-Part 1: Launch Cloud Instance & SSH Access
+### Part 1: Launch Cloud Instance & SSH Access
 
    - Step 1: Create a cloud instance
       -->In AWS, a virtual server is called an EC2 Instance.
@@ -90,7 +90,7 @@ Part 1: Launch Cloud Instance & SSH Access
                   ↓
          AWS EC2 Linux Server
 
- Part 2: Install Docker & Nginx
+### Part 2: Install Docker & Nginx
 
    - Step 1: Update System
      
@@ -118,24 +118,24 @@ Part 1: Launch Cloud Instance & SSH Access
            sudo systemctl status docker
 
 
-     - Step 3: Install Nginx
+  - Step 3: Install Nginx
 
            - Install Nginx
              sudo apt install nginx -y
 
-      - Step 4: Verify Nginx is running
+  - Step 4: Verify Nginx is running
 
             - Check status:
                sudo systemctl status nginx
 
-      - Step 5: Open Nginx web page
+   - Step 5: Open Nginx web page
     
               http://65.0.4.144
 
            <img width="1692" height="792" alt="NginxHomePage" src="https://github.com/user-attachments/assets/57000f61-c26b-4f82-93a2-f518a3e36834" />
 
 
- Part 3: Extract Nginx Logs
+### Part 3: Extract Nginx Logs
 
    - Step 1: View Nginx logs
 
@@ -150,7 +150,7 @@ Part 1: Launch Cloud Instance & SSH Access
             - Watch logs live (New request appearing live)
                sudo tail -f /var/log/nginx/access.log
 
-     - Step 2: Save logs to file
+  - Step 2: Save logs to file
 
             - Save access logs
                sudo cp /var/log/nginx/access.log ~/nginx-access.log
@@ -158,7 +158,7 @@ Part 1: Launch Cloud Instance & SSH Access
             - Verify files
                ls -l ~/*.log
 
-     - Step 3: Download Log file to local
+  - Step 3: Download Log file to local
 
              Run command from:
              Ubuntu WSL and not inside EC2.
