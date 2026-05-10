@@ -11,27 +11,62 @@ Deploy a real web server on the cloud and learn practical server management.
 
 Part 1: Launch Cloud Instance & SSH Access
 
-Step 1: Create a cloud instance
+   - Step 1: Create a cloud instance
       -->In AWS, a virtual server is called an EC2 Instance.
      
-  - Click Launch Instance
-  - Configure: Name → First-cloud-server ; AMI → Ubuntu Server
-  - Create a key pair: myKey.pem
-  - In Network Settings → Allow SSH (Port 22) from IP
+       - Click Launch Instance
+       - Configure: Name → First-cloud-server ; AMI → Ubuntu Server
+       - Create a key pair: myKey.pem
+       - In Network Settings → Allow SSH (Port 22) from IP
+     
+        <img width="1910" height="362" alt="AWSInstance" src="https://github.com/user-attachments/assets/4a6f7868-defb-47ac-ba40-738c97d982ef" />
+
+   
+       - Allow SSH traffic from → My IP
+       - Port 22 (SSH) - only for SSH access, not for opening the NGINX website in browser.
+       
+              -  With this we can:
+   
+                   - SSH into server
+                   - Install NGINX
+                   - Start/stop services
+                   - Download logs
+                   - View logs from terminal
+      
+              - But we cannot open the NGINX webpage in browser because:
+         
+                   - Web traffic uses: Port 80 (HTTP) ; Port 443 (HTTPS)
+                   - So, select option Anywhere (0.0.0.0/0)
 
 
 
+     | Type | Port | Source  |
+     | ---- | ---- | ------- |
+     | SSH  |  22  | Your IP |
+     | HTTP  | 80  | Anywhere|
+     | HTTPS | 443 | Anywhere|
 
 
-Step 2: Connect via SSH
+   
+   - Step 2: Connect via SSH
 
-  What is SSH?
+      What is SSH?
 
--->SSH = Secure Shell
+      -->SSH = Secure Shell
+     It is a secure protocol used to:
 
-It is a secure protocol used to:
+        - Connect to remote Linux servers
+        - Execute commands remotely
+        - Transfer files securely
 
-  - Connect to remote Linux servers
-  - Execute commands remotely
-  - Transfer files securely
 
+      SSH using Ubuntu WSL:
+
+            Change directory to the downloaded key pem file
+             cd /mnt/c/Users/DELL/Downloads
+
+             Permission to PEM File
+             chmod 400 myKey.pem  (Owner can read ; Others cannot access)
+
+             Connect to Server
+             ssh -i myKey.pem ubuntu@13.233.xx.xx
