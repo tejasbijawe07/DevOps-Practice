@@ -7,6 +7,7 @@ Deploy a real web server on the cloud and learn practical server management.
    - Configure security groups for web access (port 80 by default for nginx)
    - Extract and save logs to a file
    - Verify if webpage is accessible from the internet
+
 ---
 
 Part 1: Launch Cloud Instance & SSH Access
@@ -69,4 +70,126 @@ Part 1: Launch Cloud Instance & SSH Access
              chmod 400 myKey.pem  (Owner can read ; Others cannot access)
 
              Connect to Server
-             ssh -i myKey.pem ubuntu@13.233.xx.xx
+             ssh -i myKey.pem ubuntu@65.0.4.144
+
+     Useful ssh commands:
+
+            Check server hostname
+            hostname
+
+            Check OS
+            cat /etc/os-release
+
+     Flow Summary:
+
+            Windows Machine
+                  ↓
+         SSH Client (PowerShell / Ubuntu WSL)
+                  ↓
+               Internet
+                  ↓
+         AWS EC2 Linux Server
+
+ Part 2: Install Docker & Nginx
+
+   - Step 1: Update System
+     
+         - Update Package list
+           sudo apt update
+
+         - Upgrade installed Packages
+           sudo apt upgrade -y
+
+   - Step 2: Install Docker
+
+         - Install docker
+           sudo apt install docker.io -y
+
+         - Start docker service
+           sudo systemctl start docker
+
+         - Enable docker at boot
+           sudo systemctl enable docker
+
+         - Verify docker
+           docker --version
+
+         - Check docker service
+           sudo systemctl status docker
+
+
+     - Step 3: Install Nginx
+
+           - Install Nginx
+             sudo apt install nginx -y
+
+      - Step 4: Verify Nginx is running
+
+            - Check status:
+               sudo systemctl status nginx
+
+      - Step 5: Open Nginx web page
+    
+              http://65.0.4.144
+
+           <img width="1692" height="792" alt="NginxHomePage" src="https://github.com/user-attachments/assets/57000f61-c26b-4f82-93a2-f518a3e36834" />
+
+
+ Part 3: Extract Nginx Logs
+
+   - Step 1: View Nginx logs
+
+            | Log Type    | Path                        |
+            | ----------- | --------------------------- |
+            | Access Logs | `/var/log/nginx/access.log` |
+            | Error Logs  | `/var/log/nginx/error.log`  |
+
+            - View Access logs
+               sudo cat /var/log/nginx/access.log
+
+            - Watch logs live (New request appearing live)
+               sudo tail -f /var/log/nginx/access.log
+
+     - Step 2: Save logs to file
+
+            - Save access logs
+               sudo cp /var/log/nginx/access.log ~/nginx-access.log
+
+            - Verify files
+               ls -l ~/*.log
+
+     - Step 3: Download Log file to local
+
+             Run command from:
+             Ubuntu WSL and not inside EC2.
+
+                scp -i ~/.ssh/myKey.pem ubuntu@65.0.4.144:~/nginx-access.log .
+
+             - Verify
+                ls
+
+       Useful linux log commands
+
+            Last 20 lines
+              tail -20 /var/log/nginx/access.log
+
+            Search errors
+              grep "404" /var/log/nginx/access.log
+
+---
+
+  DevOps Usecase:
+
+         | Scenario       | Why Logs Matter          |
+         | -------------- | ------------------------ |
+         | Website down   | Check error logs         |
+         | High traffic   | Analyze access logs      |
+         | Security issue | Detect suspicious IPs    |
+         | Debugging      | Identify failed requests |
+         | Monitoring     | Observe user activity    |
+
+
+   Workflow:
+
+        EC2 → SSH → Nginx → Logs → SCP Download
+
