@@ -54,6 +54,7 @@ Deploy a real web server on the cloud and learn practical server management.
       What is SSH?
 
       -->SSH = Secure Shell
+
      It is a secure protocol used to:
 
         - Connect to remote Linux servers
@@ -132,7 +133,7 @@ Deploy a real web server on the cloud and learn practical server management.
     
               http://65.0.4.144
 
-           <img width="1692" height="792" alt="NginxHomePage" src="https://github.com/user-attachments/assets/57000f61-c26b-4f82-93a2-f518a3e36834" />
+     <img width="1692" height="792" alt="NginxHomePage" src="https://github.com/user-attachments/assets/57000f61-c26b-4f82-93a2-f518a3e36834" />
 
 
 ### Part 3: Extract Nginx Logs
@@ -193,3 +194,93 @@ Deploy a real web server on the cloud and learn practical server management.
 
         EC2 → SSH → Nginx → Logs → SCP Download
 
+---
+
+Challenges Faced
+
+1. When using WSL, permission denied for PEM file:
+
+    - Windows drives are mounted under /mnt.
+    - Permission denied for pem file
+
+          o/p:
+          Permissions 0555 for 'myKey.pem' are too open.
+          It is required that your private key files are NOT accessible by others.
+          dell@65.0.4.144: Permission denied (publickey).
+  
+      
+     - Fix 1:
+        
+           chmod 400 mykey.pem    -->(Only owner can read)
+           Check permissions:    -->(still permission not changed)
+           ls -l myKey.pem
+           -r-xr-xr-x 1 dell dell 1674 May 10 02:51 myKey.pem
+
+      - Fix 2: Move the PEM file into your Linux home directory inside WSL.
+
+              - Create ssh folder
+                  mkdir -p ~/.ssh
+
+              - Copy pem file
+                  cp /mnt/g/DevOps/myKey.pem ~/.ssh/
+
+              - cd ssh folder
+                  cd ~/.ssh
+
+              - change permissions
+                  chmod 400 myKey.pem
+
+              - verify
+                  ls -l
+                  o/p:
+                  -r-------- 1 dell dell 1674 May 10 03:14 myKey.pem
+                  ssh -i ~/.ssh/myKey.pem ubuntu@65.0.4.144
+
+               | Location     | Permission Behavior    |
+               | ------------ | ---------------------- |
+               | `/mnt/c/...` | Controlled by Windows  |
+               | `~/.ssh`     | Real Linux permissions |
+
+
+2. While downloading log file to local, scp: remote open "nginx-access.log": Permission denied.
+   
+      - ubuntu user does not have permission to read the file.
+      - Because the log file was copied using sudo, so it is owned by root.
+
+            o/p:
+            scp: remote open "nginx-access.log": Permission denied
+
+
+      - Fix 1: copy
+
+            Instead of copying with sudo cp, create log copy as ubuntu user:
+            sudo cat /var/log/nginx/access.log > ~/nginx-access.log
+
+            OR download into windows downloads folder:
+            scp -i ~/.ssh/myKey.pem ubuntu@65.0.4.144:~/nginx-access.log /mnt/c/Users/Downloads/
+      - Fix 2: Fix on EC2 Server
+
+             ssh into EC2 instance
+             ssh -i ~/.ssh/myKey.pem ubuntu@65.0.4.144
+  
+             check file ownership
+             ls -l ~/nginx-access.log
+
+             change ownership
+             sudo chown ubuntu:ubuntu ~/nginx-access.log
+
+        | WSL Path     | Windows Equivalent        |
+        | ------------ | ------------------------- |
+        | `/home/dell` | Internal Linux filesystem |
+        | `/mnt/c`     | `C:\` drive               |
+        | `/mnt/d`     | `D:\` drive               |
+
+---
+
+Summary:
+
+   - Cloud infrastructure provisioning - launching and configuring servers
+   - Remote server management - SSH, security, access control
+   - Service deployment - installing and running applications
+   - Log management - accessing and analyzing logs
+   - Security - configuring firewalls and security groups
