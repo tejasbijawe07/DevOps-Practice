@@ -20,10 +20,10 @@ Task 1: Creating Users
 
 Create three users with home directories and passwords:
 
-tokyo
-berlin
-professor
-
+ - tokyo
+ - berlin
+ - professor
+   
 a. user tokyo -
 
   - Create user
@@ -98,7 +98,7 @@ c. user professor -
 
          grep professor /etc/passwd
            o/p:
-           professor:x:1003:1003:,,,:/home/berlin:/bin/bash
+           professor:x:1003:1003:,,,:/home/professor:/bin/bash
 
    - Verify if home directory exists
 
@@ -106,4 +106,79 @@ c. user professor -
           o/p:
           drwxr-x--- 2 professor professor 4096 May 11 02:58 /home/professor
 
-          
+ ---
+
+ Task 2: Create Groups
+
+  Create two groups:
+
+  - developers
+  - admins
+
+  a. Create groups:
+
+     sudo groupadd developers     
+     sudo groupadd admins
+
+  b. Verify groups:
+
+     grep -E "developers|admins" /etc/group
+     
+     o/p:
+     developers:x:1005:   ...(developers → group name
+                              1005 → Group ID (GID))
+     admins:x:1006:
+
+---
+    
+Task 3: Assign to Groups
+
+Assign users:
+
+ - tokyo → developers
+ - berlin → developers + admins (both groups)
+ - professor → admins
+
+a. Add Users to Groups
+ 
+ tokyo → developers
+
+    sudo usermod -aG developers tokyo
+
+ berlin → developers + admins
+  
+    sudo usermod -aG developers,admins berlin
+
+ professor → admins
+
+    sudo usermod -aG admins professor
+
+b. Verify Group Membership
+
+  Using id-
+     
+     id tokyo
+     id berlin
+     id professor
+
+     o/p:
+     uid=1001(tokyo) gid=1002(tokyo) groups=1002(tokyo),1005(developers)
+     uid=1003(berlin) gid=1003(berlin) groups=1003(berlin),100(users),1005(developers),1006(admins)
+     uid=1004(professor) gid=1004(professor) groups=1004(professor),100(users),1006(admins)
+
+   Using /etc/group-
+    
+     grep -E "developers|admins" /etc/group
+
+     o/p:
+     developers:x:1005:tokyo,berlin
+     admins:x:1006:berlin,professor
+
+---
+
+Task 4: Shared Directory
+
+  - Create directory: /opt/dev-project
+  - Set group owner to developers
+  - Set permissions to 775 (rwxrwxr-x)
+  - Test by creating files as tokyo and berlin
