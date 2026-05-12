@@ -293,18 +293,16 @@ Task 5: Team Workspace
 
 ### What we created today using users and group management linux commands
 
-## Users & Groups Created
-- Users: tokyo, berlin, professor, nairobi
-- Groups: developers, admins, project-team
+Users & Groups Created
+   - Users: tokyo, berlin, professor, nairobi
+   - Groups: developers, admins, project-team
 
-## Group Assignments
-[List who is in which groups]
+Group Assignments
+   - developers --> tokyo, berlin
+   - admins --> berlin, professor
+   - project-team --> tokyo, nairobi
 
-## Directories Created
-[List directories with permissions]
+Directories Created
+   - users-groups - drwxrwxr-x 2 root developers 4096 May 12 02:37 /opt/users-groups
+   - team-workspace - drwxrwxr-x 2 root project-team 4096 May 12 02:48 /opt/team-workspace
 
-## Commands Used
-[Your commands here]
-
-## What I Learned
-[3 key points]
