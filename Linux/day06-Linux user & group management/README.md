@@ -182,3 +182,28 @@ Task 4: Shared Directory
   - Set group owner to developers
   - Set permissions to 775 (rwxrwxr-x)
   - Test by creating files as tokyo and berlin
+
+
+1. Create directory-
+
+       sudo mkdir /opt/users-groups
+
+2. group owner to developers:
+
+       sudo chown root:developers /opt/users-groups  ...(owner user = root, owner group = developers)
+
+       - Verify:
+            ls -ld /opt/users-groups
+
+3. Set permissions to `775`
+
+        sudo chmod 775 /opt/users-groups
+
+        o/p:
+        drwxrwxr-x 2 root developers 4096 May 12 01:21 /opt/users-groups
+   
+       | User Type | Permissions          |
+       | --------- | -------------------- |
+       | Owner     | read, write, execute |
+       | Group     | read, write, execute |
+       | Others    | read, execute        |
