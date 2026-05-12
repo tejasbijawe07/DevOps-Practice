@@ -184,7 +184,7 @@ Task 4: Shared Directory
   - Test by creating files as tokyo and berlin
 
 
-1. Create directory-
+1. Create directory:
 
        sudo mkdir /opt/users-groups
 
@@ -195,7 +195,7 @@ Task 4: Shared Directory
        - Verify:
             ls -ld /opt/users-groups
 
-3. Set permissions to `775`
+3. Set permissions to `775`:
 
         sudo chmod 775 /opt/users-groups
 
@@ -207,3 +207,104 @@ Task 4: Shared Directory
        | Owner     | read, write, execute |
        | Group     | read, write, execute |
        | Others    | read, execute        |
+
+4. Test using tokyo and berlin user:
+
+     - switch user
+
+           su - tokyo
+
+     - create file
+
+           touch /opt/users-groups/tokyo-file.txt
+
+     - verify
+
+           ls -l /opt/dev-project
+
+   similarly, test and create file using berlin user.
+
+---
+
+Task 5: Team Workspace
+
+   - Create user nairobi with home directory
+   - Create group project-team
+   - Add nairobi and tokyo to project-team
+   - Create /opt/team-workspace directory
+   - Set group to project-team, permissions to 775
+   - Test by creating file as nairobi
+
+
+1. Creat user nairobi
+
+        sudo adduser nairobi
+
+2. Create group project-team
+
+        sudo groupadd project-team
+
+        verify:
+        grep project-team /etc/group
+        o/p:
+        project-team:x:1008:
+
+3. Add tokyo and nairobi into project-team group
+
+       sudo usermod -aG project-team nairobi
+       sudo usermod -aG project-team tokyo
+
+4. create workspace directory
+
+       sudo mkdir /opt/team-workspace
+
+5. set group ownership
+
+       sudo chown root:project-team /opt/team-workspace
+
+6. set permission to `775`
+
+       sudo chmod 775 /opt/team-workspace
+
+       verify:
+       ls -ld /opt/team-workspace
+
+       o/p:
+       drwxrwxr-x 2 root project-team 4096 May 12 02:48 /opt/team-workspace
+
+7. test as nairobi user
+
+     - switch user
+
+            su - nairobi
+
+     - crwate file
+  
+           touch /opt/team-workspace/test.txt
+
+  verification commands:
+
+      ls -ld /opt/team-workspace
+      ls -l /opt/team-workspace
+      grep project-team /etc/group
+      id nairobi
+      id tokyo
+
+
+### What we created today using users and group management linux commands
+
+## Users & Groups Created
+- Users: tokyo, berlin, professor, nairobi
+- Groups: developers, admins, project-team
+
+## Group Assignments
+[List who is in which groups]
+
+## Directories Created
+[List directories with permissions]
+
+## Commands Used
+[Your commands here]
+
+## What I Learned
+[3 key points]
