@@ -60,11 +60,13 @@
 
 4. Group execute permission
 
-         Before:
-        -rw-r--r-- 1 developers 50 May 13 script.sh ...(r-- group members only can read)
+     Before:
+     -rw-r--r-- 1 developers 50 May 13 script.sh ...(r-- group members only can read)
+
          chmod g+x script.sh   ...(gives execute x permission to the group)
-         After:
-         -rw-r-xr-- 1 developers 50 May 13 script.sh ...(r-x group members can also execute the file)
+
+     After:
+     -rw-r-xr-- 1 developers 50 May 13 script.sh ...(r-x group members can also execute the file)
    
  | Symbol | Meaning    |
  | ------ | ---------- |
