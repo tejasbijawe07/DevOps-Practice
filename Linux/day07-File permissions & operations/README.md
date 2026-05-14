@@ -78,3 +78,41 @@
    
 ---
     
+Task 1: Create files
+
+1. using touch
+
+       touch devops.txt
+
+2. create file with some content using echo
+
+       touch notes.txt
+       echo "Hello Devops" > notes.txt
+       ls -l ...(check permissions)
+
+
+Task 2: Modify permissions
+
+1. Make script.sh executable
+
+       chmod +x script.sh
+
+2. set notes.txt to read-only
+
+       chmod -w notes.txt
+
+3. set devops.txt to 640
+
+       chmod 640 notes.txt
+       o/p:
+       -rw-r-----
+
+
+| Permission | Meaning                         |
+| ---------- | ------------------------------- |
+| `444`      | Read-only for all               |
+| `640`      | Owner rw, group r               |
+| `755`      | Owner full, others read/execute |
+| `777`      | Full access for everyone        |
+
+       
