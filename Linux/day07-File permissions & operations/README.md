@@ -119,27 +119,27 @@ Task 2: Modify permissions
 
 1. Basic chown operations(Change owner)
 
-Check current owner
+   - Check current owner
   
-    ls -l devops.txt
+         ls -l devops.txt
     
-Change owner to tokyo
+   - Change owner to tokyo
 
-    sudo chown tokyo devops.txt
+         sudo chown tokyo devops.txt
 
 2. Basic chgrp operations(Change group)
 
-Check current group
+   - Check current group
 
-    ls -l devops.txt
+         ls -l devops.txt
 
-Create group
+   - Create group
 
-    sudo groupadd developers
+         sudo groupadd developers
 
-Change group to heist-team
+   - Change group to heist-team
 
-    sudo chgrp developers notes.txt
+         sudo chgrp developers notes.txt
 
 3. Change owner and group using single command
 
