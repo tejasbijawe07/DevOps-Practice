@@ -115,4 +115,36 @@ Task 2: Modify permissions
 | `755`      | Owner full, others read/execute |
 | `777`      | Full access for everyone        |
 
-       
+---
+
+1. Basic chown operations(Change owner)
+
+Check current owner
+  
+    ls -l devops.txt
+    
+Change owner to tokyo
+
+    sudo chown tokyo devops.txt
+
+2. Basic chgrp operations(Change group)
+
+Check current group
+
+    ls -l devops.txt
+
+Create group
+
+    sudo groupadd developers
+
+Change group to heist-team
+
+    sudo chgrp developers notes.txt
+
+3. Change owner and group using single command
+
+       sudo chown tokyo:developers notes.txt  ...(owner:group)
+
+4. Change group recursively
+
+       sudo chgrp -R developers LinuxPractice ...(-R means recursive, all files/subdirectories)
