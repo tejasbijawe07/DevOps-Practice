@@ -1,4 +1,4 @@
-## Networking Fundamentals and Hands-on
+## Networking Fundamentals
 
 1. OSI Model vs TCP/IP Model
 
@@ -123,3 +123,13 @@ Example:
 - HTTPS is an Application Layer protocol that runs over TCP, which runs over IP.
 
 - DNS is an Application Layer protocol that usually uses UDP on port 53 over IP.
+
+
+ | Problem             | Fastest Useful Command |
+ | -------------------- | ---------------------- |
+ | Website not opening  | `curl -I URL`          |
+ | DNS issue suspected  | `dig domain.com`       |
+ | Port/service issue   | `nc -zv host port`     |
+ | Network unreachable  | `ping`                 |
+ | Service down locally | `ss -tulnp`            |
+
