@@ -23,4 +23,13 @@ Task1- First Script:
 
       chmod +x firstScript.sh
 
-  Task2- Variables:
+ Task2- Variables:
+
+     nano scripting.sh
+
+     #!/bin/bash
+
+    NAME="Tejas"
+    ROLE="DevOps Engineer"
+
+    echo "Hello, I am $NAME and I am a $ROLE"
