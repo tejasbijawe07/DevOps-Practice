@@ -106,3 +106,9 @@ ex: ./test.sh apple mango
  - Script name: ./args_demo.sh
  - Total number of arguments: 3
  - All arguments: apple mango banana
+
+---
+
+Task 4: Install Packages via Script
+
+
