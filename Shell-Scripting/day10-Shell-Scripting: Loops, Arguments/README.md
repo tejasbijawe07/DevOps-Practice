@@ -111,4 +111,68 @@ ex: ./test.sh apple mango
 
 Task 4: Install Packages via Script
 
+This script will:
 
+- Define package list
+- Loop through packages
+- Check if package is installed
+- Install missing packages
+- Skip already installed packages
+- Print status messages
+
+
+      #!/bin/bash
+
+      PACKAGES="nginx curl wget"
+
+      for PACKAGE in $PACKAGES
+      do
+         echo "Checking package: $PACKAGE"
+
+         if dpkg -s $PACKAGE >/dev/null 2>&1; then
+            echo "$PACKAGE is already installed"
+
+         else
+            echo "$PACKAGE is NOT installed"
+            echo "Installing $PACKAGE..."
+
+            sudo apt update -y
+            sudo apt install -y $PACKAGE
+
+            echo "$PACKAGE installation completed"
+        fi
+
+        echo "-----------------------------"
+      done
+
+
+      o/p:
+      Checking package: nginx
+      nginx is NOT installed
+      Installing nginx...
+      nginx installation completed
+      -----------------------------
+
+      Checking package: curl
+      curl is already installed
+      -----------------------------
+
+  Understanding script:
+  
+  - Package List: Stores multiple package names.
+         - `PACKAGES="nginx curl wget"`
+
+  - Loop: Processes packages one by one.
+         - `for PACKAGE in $PACKAGES`
+
+  - Check Installation: Checks if package exists on Ubuntu.
+         - `dpkg -s $PACKAGE`
+
+  - Redirect o/p: Hides unnecessary o/p /errors.
+         - `>/dev/null 2>&1`
+ 
+  - Install Package: sudo → admin privileges, apt install → install package, 
+-y → auto-confirm yes.
+         - `sudo apt install -y $PACKAGE`
+
+  
