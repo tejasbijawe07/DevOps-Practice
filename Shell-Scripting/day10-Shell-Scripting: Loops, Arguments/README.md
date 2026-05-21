@@ -175,4 +175,50 @@ This script will:
 -y → auto-confirm yes.
          - `sudo apt install -y $PACKAGE`
 
-  
+---
+
+Task 5: Error Handling
+
+This script demonstrates:
+  - set -e
+  - error handling
+  - || operator
+  - safe scripting practices
+
+
+        #!/bin/bash
+
+        set -e
+
+        mkdir /tmp/devops-test || {
+            echo "Failed to create directory"
+        }
+
+        cd /tmp/devops-test || {
+            echo "Failed to enter directory"
+        }
+
+        touch testfile.txt || {
+           echo "Failed to create file"
+        }
+
+        echo "Script completed successfully"
+
+    Understanding script:
+
+    - `set -e`: Exits the script immediately if any command fails.
+    - || : `command || echo "Error" `; if command fails, run the right-side command.
+
+
+| Option     | Purpose                            |
+| ---------- | ---------------------------------- |
+| `-e`       | exit on error                      |
+| `-u`       | fail on undefined variables        |
+| `pipefail` | fail pipeline if any command fails |
+
+
+- For loop: for item in list; do ... done
+- While loop: while [ condition ]; do ... done
+- Arguments: $1 first arg, $# count, $@ all args
+- Check root: if [ "$EUID" -ne 0 ]; then echo "Run as root"; exit 1; fi
+- Check package: dpkg -s <pkg> &> /dev/null && echo "installed"
