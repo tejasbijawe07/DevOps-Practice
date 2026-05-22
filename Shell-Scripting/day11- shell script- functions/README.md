@@ -63,50 +63,51 @@ Task 2: Functions with Return Values
 ---
 
 Task 3: Strict Mode — set -euo pipefail
-    - Create strict_demo.sh with set -euo pipefail at the top
-    - Try using an undefined variable — what happens with set -u?
-    - Try a command that fails — what happens with set -e?
-    - Try a piped command where one part fails — what happens with set -o pipefail?
+
+   - Create strict_demo.sh with set -euo pipefail at the top
+   - Try using an undefined variable — what happens with set -u?
+   - Try a command that fails — what happens with set -e?
+   - Try a piped command where one part fails — what happens with set -o pipefail?
 
 
-       #!/bin/bash
+         #!/bin/bash
 
-       # Enable strict mode
-       set -euo pipefail
+         # Enable strict mode
+         set -euo pipefail
 
-       echo "===== Strict Mode Demo ====="
+         echo "===== Strict Mode Demo ====="
 
-      # -----------------------------
-      # 1. Undefined Variable Demo
-      # -----------------------------
-      echo "Testing undefined variable..."
+         # -----------------------------
+         # 1. Undefined Variable Demo
+         # -----------------------------
+         echo "Testing undefined variable..."
 
-      echo "$USERNAME"
+         echo "$USERNAME"
 
-      # Script will stop here because USERNAME is not defined
-
-
-       # -----------------------------
-        # 2. Command Failure Demo
-       # -----------------------------
-       echo "Testing command failure..."
-
-       mkdir /tmp/demo-dir
-       mkdir /tmp/demo-dir
-
-      # Second mkdir fails because directory already exists
-      # Script exits immediately due to set -e
+         # Script will stop here because USERNAME is not defined
 
 
-      # -----------------------------
-      # 3. Pipe Failure Demo
-      # -----------------------------
-      echo "Testing pipe failure..."
+         # -----------------------------
+         # 2. Command Failure Demo
+         # -----------------------------
+         echo "Testing command failure..."
 
-       cat missingfile.txt | grep "hello"
+         mkdir /tmp/demo-dir
+         mkdir /tmp/demo-dir
 
-       # cat fails because file does not exist
-       # Due to pipefail, entire pipeline fails and script exits
+         # Second mkdir fails because directory already exists
+         # Script exits immediately due to set -e
+
+
+         # -----------------------------
+         # 3. Pipe Failure Demo
+         # -----------------------------
+         echo "Testing pipe failure..."
+
+         cat missingfile.txt | grep "hello"
+
+         # cat fails because file does not exist
+         # Due to pipefail, entire pipeline fails and script exits
 
 
 ### Understanding `set -euo pipefail` 
