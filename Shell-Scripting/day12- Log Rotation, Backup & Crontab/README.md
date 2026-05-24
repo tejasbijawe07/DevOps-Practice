@@ -1,4 +1,4 @@
-## Shell Scripting Project: Log Rotation, Backup & Crontab
+## Shell Scripting Project: Log Rotation & Crontab
 
 Task 1: Log Rotation Script
 
@@ -106,4 +106,45 @@ Understanding the script:
 
 ---
 
-Task 2:
+Task 2: Cron Job
+
+ - `crontab -l` - To see currently scheduled cron jobs.
+
+ - cron Syntax -
+
+       To define the time we can provide concrete values for
+       minute (m), hour (h), day of month (dom), month (mon),
+       and day of week (dow) or can use '*' in these fields.
+
+       0 2 * * * log_rotate.sh
+
+   
+       * * * * * command
+       │ │ │ │ │
+       │ │ │ │ └── Day of week (0-7)
+       │ │ │ └──── Month (1-12)
+       │ │ └────── Day of month (1-31)
+       │ └──────── Hour (0-23)
+       └────────── Minute (0-59)
+
+
+- cron entry to be run inside the crontab editor, not executed in bash.
+
+      crontab -e
+
+
+- Run log_rotate.sh Every Day at 2 AM
+
+      0 2 * * * /path/to/log_rotate.sh
+
+      0 → minute 0
+      2 → 2 AM
+      * * * → every day/month/week
+
+
+- Run health_check.sh script every 5 min
+
+      */5 * * * * /path/to/health_check.sh
+
+      */5 → every 5 minutes
+      remaining * → every hour/day/month/week
