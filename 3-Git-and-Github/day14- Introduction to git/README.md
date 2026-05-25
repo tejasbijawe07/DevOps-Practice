@@ -100,3 +100,82 @@ Task 3: Stage and Commit
   - Check what's staged
   - Commit with a meaningful message
   - View your commit history
+
+
+1. Check current status
+
+       git status
+
+       o/p:
+       Untracked files:    (Not yet being tracked)
+       git-commands.md
+
+2. Stage the file
+
+       git add git-commands.md
+
+       git status
+
+       o/p:
+       Changes to be committed:     (File is staged, git is ready to include in next commit)
+       new file: git-commands.md
+
+
+3. Commit the File
+
+       git commit -m "Add Git commands reference documentation"
+
+       o/p:
+       [main (root-commit) dbccdcf] Add Git commands reference documentation
+       1 file changed, 29 insertions(+)
+       create mode 100644 git-commands.md
+
+
+4. View commit History
+
+       git log
+
+       o/p:
+       commit dbccdcf557bb16ca1787f65e84d54cb0149cf47d (HEAD -> master)
+       Author: tejasbijawe07
+       Date:   Mon May 25 02:21:13 2026 +0000
+
+
+       git log --oneline
+
+       o/p:
+       dbccdcf (HEAD -> master) Add Git commands reference documentation
+
+---
+
+Task 4: Git Workflow
+
+1. What is the difference between git add and git commit?
+
+    - git add moves changes into the staging area, preparing them for saving.
+    - git commit permanently saves those staged changes into Git history as a snapshot with a message.
+  
+
+2. What does the staging area do? Why doesn't Git just commit directly?
+
+    - The staging area lets us choose which changes should be included in the next commit.
+    - This gives better control, allowing developers to organize commits cleanly instead of saving every file change directly.
+
+
+3. What information does git log show you?
+
+    - git log shows the commit history of the repository.
+    - It includes commit IDs, author details, dates, and commit messages for each saved snapshot.
+
+  
+4. What is the .git/ folder and what happens if you delete it?
+
+    - The .git/ folder stores all Git metadata, commits, branches, and repository history.
+    - If we delete it, the folder stops being a Git repository and all version history is lost.
+  
+
+5. What is the difference between a working directory, staging area, and repository?
+
+     - The working directory contains current project files and edits.
+     - The staging area holds selected changes ready for commit, while the repository stores the committed history permanently inside Git.
+    
