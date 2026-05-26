@@ -115,7 +115,7 @@ Task 3: Push to GitHub
 
     - url of new repo:
 
-     https://github.com/tejasbijawe07/devops-git-practice.git
+          https://github.com/tejasbijawe07/devops-git-practice.git
 
     - Add remote:
   
@@ -141,8 +141,9 @@ Task 3: Push to GitHub
        git push -u origin feature-1
 
 4. verify branches on github
-        - master
-        - feature-1
+   
+    - master
+    - feature-1
 
 
 ### 5. What is the difference between origin and upstream?
@@ -170,5 +171,75 @@ Useful commands:
    - Answer in your notes: What is the difference between git fetch and git pull?
 
 
+1. changing git-commands.md file in github
+
+2. Pull changes to local repository
+
+       git pull
+
+  the line added from GitHub, can be seen in our local file.
+
+
+### What is the difference between git fetch and git pull?
+
+`git fetch` downloads the latest changes from the remote repository but does not modify your local working files.  
+It only updates remote tracking information.
+
+`git pull` downloads the changes and automatically merges them into your current local branch.  
+It is basically a combination of `git fetch` + `git merge`.
+ 
+---
+
+Task 5: Clone vs Fork
+  - Clone any public repository from GitHub to your local machine
+  - Fork the same repository on GitHub, then clone your fork
+
+  1. Clone
+      
+             git clone https://github.com/git/git.git
+
+       This will:
+       - download the repository
+       - create a local copy on your machine
+       - connect the remote as origin
+   
+
+   2. Fork
+
+       Steps:
+       - Open the repository on GitHub
+       - Click the Fork button
+       - GitHub creates your own copy under your account
+
+
+### 1. What is the difference between clone and fork?
+
+ - A clone creates a local copy of a repository on your machine using Git.  
+ - A fork creates a separate copy of someone else's repository under your own GitHub account.
+
+
+### 2. When would you clone vs fork?
+
+You clone a repository when you simply want a local working copy.  
+You fork a repository when you want to contribute independently without direct access to the original repository.
+
+
+### 3. After forking, how do you keep your fork in sync with the original repo?
+
+You add the original repository as an upstream remote and pull updates from it.  
+
+Example:
+
+    git remote add upstream <original-repo-url>
+    git fetch upstream
+    git merge upstream/master
+
+
+| Term     | Meaning                    |
+| -------- | -------------------------- |
+| Clone    | Local copy of repository   |
+| Fork     | GitHub-side personal copy  |
+| Origin   | Your repository remote     |
+| Upstream | Original source repository |
 
  
