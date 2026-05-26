@@ -109,3 +109,66 @@ Task 3: Push to GitHub
   - Push your main branch to GitHub
   - Push feature-1 branch to GitHub
   - Verify both branches are visible on GitHub
+
+
+1. Connect local repository to github remote
+
+    - url of new repo:
+
+     https://github.com/tejasbijawe07/devops-git-practice.git
+
+    - Add remote:
+  
+          git remote add origin https://github.com/tejasbijawe07/devops-git-practice.git
+
+     - verify remote:
+  
+           git remote -v
+
+           o/p:
+           origin  https://github.com/tejasbijawe07/devops-git-practice.git (fetch)
+           origin  https://github.com/tejasbijawe07/devops-git-practice.git (push)
+
+
+2. Push to main/master branch
+
+       git push -u origin master  ... (-u: sets the upstream tracking)
+
+3. Push feature-1 branch
+
+       git switch feature-1
+
+       git push -u origin feature-1
+
+4. verify branches on github
+        - master
+        - feature-1
+
+
+### 5. What is the difference between origin and upstream?
+   - Origin is the default name of the remote repository that your local repository is connected to.  
+   - It usually points to your own GitHub repository where you push and pull code.
+   - Upstream refers to the original source repository that a fork was created from.  
+   - It is commonly used in open-source workflows to keep your fork updated with the main project.
+
+
+Useful commands:
+
+
+| Task                | Command                            |
+| ------------------- | ---------------------------------- |
+| Add remote          | `git remote add origin <repo-url>` |
+| View remotes        | `git remote -v`                    |
+| Push branch         | `git push -u origin master`        |
+| Push feature branch | `git push -u origin feature-1`     |
+
+ ---
+
+ Task 4: Pull from GitHub
+   - Make a change to a file directly on GitHub (use the GitHub editor)
+   - Pull that change to your local repo
+   - Answer in your notes: What is the difference between git fetch and git pull?
+
+
+
+ 
