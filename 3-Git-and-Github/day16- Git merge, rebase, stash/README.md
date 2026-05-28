@@ -8,3 +8,19 @@ Task 1: Git Merge — Hands-On
   - Merge feature-signup into main — what happens this time?
 
 
+1. create feature-login branch
+
+       git checkout -b feature-login
+       echo "Login page added" >> app.txt
+
+       git add .
+       git commit -m "Added login page"
+
+       echo "Login validation added" >> app.txt
+       git add .
+       git commit -m "Added login validation"
+
+   2. switch to main and merge
+
+          git checkout main
+          git merge feature-login
