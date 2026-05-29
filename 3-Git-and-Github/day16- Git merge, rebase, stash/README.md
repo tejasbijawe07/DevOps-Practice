@@ -143,3 +143,157 @@ Task 2: Git Rebase — Hands-On
    - Switch to feature-dashboard and rebase it onto main
    - Observe your git log --oneline --graph --all — how does the history look compared to a merge?
 
+
+1. create feature branch
+
+       git checkout -b feature-dashboard
+
+2. Adding commits
+
+       echo "Dashboard UI" > dashboard.txt
+       git add .
+       git commit -m "Added dashboard UI"
+
+       echo "Dashboard API integration" >> dashboard.txt
+       echo "Dashboard styling" >> dashboard.txt
+       git add .
+       git commit -m "Added dashboard styling"
+
+3. Moving main ahead
+
+       git checkout main
+       echo "Critical hotfix" > hotfix.txt
+       git add .
+       git commit -m "Hotfix on main"
+
+   histories diverged:
+
+         main:      A --- B
+                       \
+        feature:        C --- D --- E
+
+4. Rebase feature branch onto main
+
+       git checkout feature-dashboard
+       git rebase main    ...(git takes feature commits and reapplies them on top of main)
+
+        A --- B --- C' --- D' --- E'
+
+5. check history
+
+       git log --oneline --graph --all
+
+
+If used merge here:
+
+       A --- B -------- M
+             \         /
+              C --- D --- E
+
+
+| Merge                     | Rebase                             |
+| ------------------------- | ---------------------------------- |
+| Preserves branch history  | Rewrites history                   |
+| Creates merge commit      | No merge commit                    |
+| Non-linear graph          | Linear graph                       |
+| Safer for shared branches | Better for cleaning local branches |
+
+
+### 1. What does rebase actually do to your commits?
+   - Rebase takes your commits, removes them temporarily, moves your branch to a new base commit, then reapplies your commits one by one.
+
+Before rebase:
+
+         main:      A --- B
+                        \
+         feature:        C --- D --- E
+
+  After rebase:
+
+         A --- B --- C' --- D' --- E'
+
+
+### 2. How is history different from a merge?
+
+- Merge History
+
+       A --- B -------- M
+             \         /
+              C --- D
+
+- Characteristics:
+
+     - Keeps original branch structure
+     - Creates merge commit (M)
+     - Preserves full history
+     - Non-linear graph
+
+
+- Rebase History
+
+      A --- B --- C' --- D'
+
+- Characteristics:
+
+     - Rewrites commit history
+     - No merge commit
+     - Cleaner graph
+     - Linear history
+ 
+
+### 3. Why should you never rebase commits that have been pushed and shared?
+
+   - Because rebase changes commit hashes.
+
+   - Example:
+
+     Before push:
+  
+          A --- B --- C
+
+     After rebase:
+
+          A --- B --- C'
+
+     Teammates still have:
+
+          A --- B --- C     ... (C ≠ C')
+     
+     Problems caused:
+
+        - Duplicate commits
+        - Confusing history
+        - Forced pushes required
+        - Team merge issues
+    
+    
+### 4. When would you use rebase vs merge?
+  
+Use Rebase When:
+  - Cleaning local branch history
+  - Updating feature branch with latest main
+  - Preparing commits before PR
+  - You want linear history
+  - Example:
+
+        git checkout feature
+        git rebase main
+
+Use Merge When:
+   - Working with shared branches
+   - Preserving branch history matters
+   - Multiple developers collaborate
+   - Integrating completed features
+   - Example:
+
+         git checkout main
+         git merge feature
+
+---
+
+Task 3: Squash Commit vs Merge Commit
+   - Create a branch feature-profile, add 4-5 small commits (typo fix, formatting, etc.)
+   - Merge it into main using --squash — what happens?
+   - Check git log — how many commits were added to main?
+   - Now create another branch feature-settings, add a few commits
+   - Merge it into main without --squash (regular merge) — compare the history
