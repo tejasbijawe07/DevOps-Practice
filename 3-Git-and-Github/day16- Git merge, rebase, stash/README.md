@@ -297,3 +297,134 @@ Task 3: Squash Commit vs Merge Commit
    - Check git log — how many commits were added to main?
    - Now create another branch feature-settings, add a few commits
    - Merge it into main without --squash (regular merge) — compare the history
+
+
+
+1. create branch and commit
+
+       git checkout main
+       git checkout -b feature-profile
+
+       echo "Profile page" > profile.txt
+       echo "Formatting updated" >> profile.txt
+       echo "Profile validation" >> profile.txt
+   
+       git add .
+       git commit -m "Updated formatting"
+   
+history:
+ 
+      main:     A
+                 \
+      feature:   B---C---D---E---F
+
+2. Squash merge
+
+        git checkout main
+        git merge --squash feature-profile
+
+    - Git combines all changes
+    - No merge commit created automatically
+    - Commits are squashed into staged changes
+
+3. check log
+
+        git log --oneline --graph
+        o/p:
+        A --- G
+   
+    - only one commit added to main.
+
+4. Regular merge
+
+       git checkout -b feature-settings
+
+       echo "Settings UI" > settings.txt
+       echo "Dark mode" >> settings.txt
+       echo "Notification settings" >> settings.txt
+
+       git add .
+       git commit -m "Added notifications"
+
+   switch to main and merge
+
+       git checkout main
+       git merge feature-settings
+
+
+5. check log
+
+       git log --oneline --graph --all
+
+ history:
+
+      main:        A --- G -------- M
+                           \      /
+      feature:              H--I--J
+
+
+Comparing history:
+
+| Feature                            | Squash Merge | Regular Merge |
+| ---------------------------------- | ------------ | ------------- |
+| Number of commits added to main    | 1            | All commits   |
+| Keeps feature commit history       | No           | Yes           |
+| Creates merge commit automatically | No           | Sometimes     |
+| Cleaner history                    | Yes          | More detailed |
+| Good for many tiny commits         | Yes          | Less ideal    |
+
+
+### 1. What does squash merging do?
+ 
+   - Squash merge combines all commits from a feature branch into one single commit before adding them to the target branch.
+
+   - Example:
+
+      Before squash:
+
+             main:      A
+                           \
+             feature:       B --- C --- D --- E
+
+       After squash:
+     
+             A -------- S
+
+     - Multiple commits become one commit
+     - Original feature branch commits are not added individually to main
+     - Produces cleaner history
+
+
+### 2. When would you use squash merge vs regular merge?
+
+Use Squash Merge When:
+  - Feature branch has many tiny commits
+  - Commits include typo fixes / formatting / WIP commits
+  - You want cleaner Git history
+  - Working on small features
+  - Merging pull requests with noisy commit history
+
+Use Regular Merge When:
+  - Commit history is important
+  - Multiple developers contributed
+  - You need full traceability
+  - Feature commits tell a useful story
+  - Large features need audit/history
+
+
+### 3. What is the trade-off of squashing?
+
+Advantages:
+  - Cleaner history
+  - Easier log reading
+  - Fewer noisy commits
+  - Simpler main branch
+
+Disadvantages:
+  - Lose commit-by-commit history
+  - Harder debugging (git bisect)
+  - Cannot see development progression
+  - Individual contributor work becomes less visible
+
+---
+
