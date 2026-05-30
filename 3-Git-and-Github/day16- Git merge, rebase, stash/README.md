@@ -428,3 +428,112 @@ Disadvantages:
 
 ---
 
+Task 4: Git Stash
+
+- Temporarily save unfinished work without committing.
+- If we made chnages to a file and switched to a different branch without commiting, we will get error and branch switching is blocked.
+
+      git stash
+- We can use `git stash` and move to different branch. when returning back to the branch we can use `git stash pop` so our previous work returns.
+
+- List stashes
+
+       git stash list ...(newest stash gets index 0)
+
+- Apply specific stash
+
+      git stash apply stash@{1}
+      OR
+      git stash pop stash@{1}
+
+| Command                    | Purpose              |
+| -------------------------- | -------------------- |
+| `git stash`                | Save current changes |
+| `git stash list`           | Show stashes         |
+| `git stash pop`            | Apply + remove stash |
+| `git stash apply`          | Apply only           |
+| `git stash drop stash@{1}` | Delete stash         |
+| `git stash clear`          | Remove all stashes   |
+
+
+### 1. What is the difference between git stash pop and git stash apply?
+
+`git stash pop` : Apply stash + removes stash from stash list.
+`git stash apply`: Apply stash + keep stash saved.
+
+
+| Command       | Applies Changes | Removes Stash |
+| ------------- | --------------- | ------------- |
+| `stash pop`   | Yes             | Yes           |
+| `stash apply` | Yes             | No            |
+
+
+---
+
+Task 5: Cherry Picking
+  - Create a branch feature-hotfix, make 3 commits with different changes
+  - Switch to main
+  - Cherry-pick only the second commit from feature-hotfix onto main
+  - Verify with git log that only that one commit was applied
+
+Copy specific commits from one branch without merging the entire branch.
+
+1. Creating feature-branch
+
+       git checkout master
+       git checkout -b feature-hotfix
+
+2. create 3 commits
+
+       echo "Logging improvement" > hotfix.txt
+       git add .
+       git commit -m "Added logging improvement"
+
+
+       echo "Critical production fix" >> hotfix.txt
+       git add .
+       git commit -m "Fixed critical production issue"
+
+
+       echo "Cleanup changes" >> hotfix.txt
+       git add .
+       git commit -m "Cleanup code"
+
+3. commit hash of second commit and cherry-pick only second commit
+
+       git log --oneline
+       o/p:
+       * 70ba141 (feature-hotfix) fixed production issue
+       * ba4084f Added logging improvement
+
+       git cherry-pick 8d2b761  ...(creates a new commit on main)
+
+4. verify
+
+       git log --oneline --graph --all
+
+
+       main:
+       A --- B --- X   ...(X= copied version of commit)
+
+       feature-hotfix:
+             \
+              C --- D --- E
+
+### 1. What does cherry-pick do?
+ - Cherry-pick copies a specific commit from one branch and applies it onto another branch.
+
+### 2. When would you use cherry-pick in a real project?
+
+ - Production hotfixes
+
+       Fix exists in development branch
+                  ↓
+       Need only that fix in production
+                  ↓
+         Cherry-pick commit
+
+ - Copying small bug fixes
+ - Move one useful commit without merging unfinished work.
+ - Release branches
+ - Bring selected fixes into release branch.
