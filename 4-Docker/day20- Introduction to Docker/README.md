@@ -210,3 +210,65 @@ Flow:
  - List all running containers
  - List all containers (including stopped ones)
  - Stop and remove a container
+
+
+1. Run an Nginx container
+
+ - Start an Nginx container and map port 80 inside container to port 8080:
+
+       docker run -d --name my-nginx -p 8080:80 nginx
+
+   Explanation:
+      - -d → Run in detached/background mode
+      - --name my-nginx → Give container a custom name
+      - -p 8080:80 → Maps host port 8080 → container port 80
+      - nginx → Image name
+
+ - Verify container is running:
+
+        docker ps
+        http://localhost:8080   (on browser)
+
+2. Run an Ubuntu Container in Interactive Mode
+
+ - Start Ubuntu container
+
+        docker run -it --name my-ubuntu ubuntu bash
+
+   Explaination:
+     - -i → Interactive mode
+     - -t → Terminal access
+     - bash → Opens bash shell inside container
+
+ - we can run linux commands and `exit` will stop the container.
+
+3. List all running containers
+
+       docker ps
+
+       o/p:
+       CONTAINER ID    IMAGE    STATUS
+       1bcba682e7df    nginx    Up 2 mins
+
+   - Shows only active containers
+  
+4. List All Containers (Including Stopped)
+
+       docker ps -a
+
+       o/p:
+       CONTAINER ID      IMAGE      STATUS
+       13564c452417      ubuntu     Exited (0)
+       1bcba682e7df      nginx      Up 5 mins
+
+   - Shows both running and stopped containers.
+  
+5. Stop a container
+
+       docker stop my-nginx
+
+6. Remove a container
+
+       docker rm my-nginx
+
+---
