@@ -1,7 +1,7 @@
 ## Introduction to Docker
 
 
-Task 1: What is Docker?
+### Task 1: What is Docker?
 - What is a container and why do we need them?
 - Containers vs Virtual Machines — what's the difference?
 - What is the Docker architecture? (daemon, client, images, containers, registry)
@@ -141,3 +141,72 @@ Flow:
            | Docker Hub /  |
            | Registry      |
            +---------------+
+
+---
+
+### Task 2: Install Docker
+ - Install Docker on your machine
+ - Verify the installation
+ - Run the hello-world container
+ - Read the output carefully — it explains what just happened
+
+1. check docker version
+
+       docker --version
+
+       o/p:
+       Docker version 29.4.0, build 9d7ad9f
+
+2. verify docker
+
+       docker info
+
+       o/p:
+       Client:
+       Server:
+       Containers:
+       Images:
+   
+       This checks:
+       Docker daemon is running
+       Client and server communication works
+       System resources available for Docker
+
+3. Run container
+
+       docker run hello-world
+
+       o/p:
+       Unable to find image 'hello-world:latest' locally
+       latest: Pulling from library/hello-world
+       ...
+       Hello from Docker!
+       This message shows that your installation appears to be working correctly.
+
+4. Understanding the o/p
+
+    When we run `docker run hello-world` :
+
+    - 1: Docker client sent request to Docker daemon
+    - 2: Docker checked if hello-world image exists locally
+    - 3: Since image was absent, Docker pulled it from Docker Hub
+    - 4: Docker created a new container from that image
+    - 5: Container executed its program and printed the message
+    - 6: Container stopped after completing execution
+
+5. Verify container creation
+
+       docker ps -a
+
+       o/p:
+       CONTAINER ID    IMAGE          STATUS
+       8d9d6b8486c1    hello-world    Exited (0)
+
+---
+
+### Task 3: Run Containers
+ - Run an Nginx container and access it in your browser
+ - Run an Ubuntu container in interactive mode — explore it like a mini Linux machine
+ - List all running containers
+ - List all containers (including stopped ones)
+ - Stop and remove a container
