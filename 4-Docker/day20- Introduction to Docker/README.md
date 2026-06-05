@@ -272,3 +272,63 @@ Flow:
        docker rm my-nginx
 
 ---
+
+Task 4: Explore
+- Run a container in detached mode — what's different?
+- Map a port from the container to your host
+- Check logs of a running container
+- Run a command inside a running container
+
+
+1. Run a Container in Detached Mode
+
+ - Run container in background
+
+       docker run -d nginx
+
+ - difference?
+
+     - Terminal remains free after starting container
+     - Container runs in background
+     - You only get the container ID as output
+     - Useful for servers, databases, web app
+  
+
+2. Map a Port from Container to Host
+
+ - Expose container service outside Docker
+
+        docker run -d --name webserver -p 8080:80 nginx
+
+ - Without port mapping, the service stays inside Docker network and is not accessible from our machine.
+
+       Host Port : Container Port
+       8080      : 80
+
+       http://localhost:8080
+
+
+3. Check Logs of a Running Container
+
+ - View logs
+
+       docker logs webserver
+
+ - Follow logs continuously
+
+       docker logs -f webserver
+
+ - Useful for:
+      - Debugging issues
+      - Viewing application output
+  
+
+4. Run a Command Inside a Running Container
+
+ - Execute command inside container
+
+        docker exec webserver ls /
+
+ - Open interactive shell:
+
+        docker exec -it webserver bash
