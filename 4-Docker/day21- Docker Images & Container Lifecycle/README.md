@@ -84,15 +84,16 @@ What are layers and why does Docker use them?
         COPY app /
         CMD ["nginx"]
 
+
 3. Why docker uses Layers?
 
-a) Faster Builds - Docker reuses unchanged layers.
+ a) Faster Builds - Docker reuses unchanged layers.
 
-b) Saves Storage - Multiple images share common layers.
+ b) Saves Storage - Multiple images share common layers.
 
-c) Faster Downloads - Only missing layers are downloaded.
+ c) Faster Downloads - Only missing layers are downloaded.
 
-d) Better Caching - Build process skips unchanged layers.
+ d) Better Caching - Build process skips unchanged layers.
 
 Layers Summary:
  - Docker images are built from multiple layers
