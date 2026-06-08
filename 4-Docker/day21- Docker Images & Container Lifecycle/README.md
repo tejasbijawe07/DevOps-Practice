@@ -224,4 +224,87 @@ Start container in background:
     - 8080 → Port exposed on your machine
 
 
-2. Run Nginx container in Detached mode
+2. View container logs
+
+       docker logs nginx-demo
+
+Logs shows:
+   - Nginx startup messages
+   - Access logs
+   - Error logs
+
+3. View real-time logs
+
+       docker logs -f nginx-demo
+
+4. Exec Into Container and Explore Filesystem
+
+   Open shell inside running container:
+
+       docker exec -it nginx-demo sh
+
+    can run commands like:
+
+        pwd
+        ls
+       cd /usr
+       cat index.html
+
+5. Run a single command without entering container
+
+       docker exec nginx-demo ls /usr
+
+6. Inspect container
+
+       docker inspect nginx-demo
+
+   Find IP address:
+
+       docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' nginx-demo
+
+   Find port mappings:
+
+       docker port nginx-demo
+
+   Find Mounts:
+
+       docker inspect -f '{{json .Mounts}}' nginx-demo
+
+---
+
+Task 5: Cleanup
+ - Stop all running containers in one command
+ - Remove all stopped containers in one command
+ - Remove unused images
+ - Check how much disk space Docker is using
+
+
+1. Stop all containers
+
+       docker stop $(docker ps -q)
+
+2.Remove all stopped containers
+
+      docker container prune
+
+3. Remove unused images
+
+       docker image prune -a
+
+4. Check disk space usage by docker
+
+       docker system df
+
+       o/p:
+       TYPE            TOTAL   ACTIVE   SIZE
+       Images          3       2        1.2GB
+       Containers      3       1        200MB
+       Volumes         2       1        500MB
+       Build Cache              300MB
+
+
+| Command                       | Result                         |
+| ----------------------------- | ------------------------------ |
+| `docker ps`                   | No running containers          |
+| `docker ps -a`                | Shows stopped nginx container  |
+| `docker stop $(docker ps -q)` | Successfully stopped container |
