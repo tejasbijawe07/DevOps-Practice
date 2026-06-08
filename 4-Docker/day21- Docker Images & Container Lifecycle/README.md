@@ -56,9 +56,9 @@
 ---
 
 ### Task 2: Image Layers
-Run docker image history nginx — what do you see?
-Each line is a layer. Note how some layers show sizes and some show 0B
-What are layers and why does Docker use them?
+ - Run docker image history nginx — what do you see?
+ - Each line is a layer. Note how some layers show sizes and some show 0B
+ - What are layers and why does Docker use them?
 
 1. view image history
 
@@ -104,5 +104,124 @@ Layers Summary:
 
 ---
 
+### Task 3: Container Lifecycle
+ 
+ Practice the full lifecycle on one container:
+ - Create a container (without starting it)
+ - Start the container
+ - Pause it and check status
+ - Stop it, Restart it, Kill it, Remove it.
 
-   
+
+1. Create a container: creates but does not start it.
+
+       docker create --name lifecycle-demo ubuntu
+
+       Verify:
+       docker ps -a
+
+       o/p:
+       CONTAINER ID   IMAGE     COMMAND       CREATED         STATUS    NAMES
+       10f56425fd1e   ubuntu    "/bin/bash"   9 seconds ago   Created   lifecycle-demo
+
+
+2. Start the container: Container runs while its main process runs; Main process exits → Container exits
+
+       docker start lifecycle-demo
+
+       Verify:
+       docker ps
+
+       o/p:
+       CONTAINER ID   IMAGE     COMMAND       CREATED          STATUS                      NAMES
+       10f56425fd1e   ubuntu    "/bin/bash"   48 seconds ago   Exited (0) 19 seconds ago   lifecycle-demo
+
+- After using above command to start container the status still shows as Exited(0).
+- This happens because container was created from Ubuntu image with default command:  /bin/bash
+- Docker starts /bin/bash, but since there is no interactive terminal attached, bash immediately exits.
+- Once the main process exits, the container stops too.
+- `Exited (0)` means:
+      - Process finished normally (0 = success)
+      - Container stopped because its main process ended
+
+- To start container interactively:
+
+        docker create -it --name lifecycle-demo ubuntu
+        docker start -ai lifecycle-demo
+
+       [-a → attach output
+       -i → interactive input
+       This attaches to bash].
+
+       docker start lifecycle-demo
+
+       Verify:
+       docker ps -a ... (Now it will start container)
+
+3. Pause the container: Freezes container processes without stopping the container.
+
+       docker pause lifecycle-demo
+
+       o/p:
+       CONTAINER ID   IMAGE     COMMAND       CREATED         STATUS                         NAMES
+       07eb37cf654e   ubuntu    "/bin/bash"   2 minutes ago   Up About a minute (Paused)     lifecycle-demo
+
+
+4. Unpause the container
+
+       docker unpause lifecycle-demo
+
+       o/p:
+       Up about a minute
+
+5. Stop the container: Gracefully shutdown
+
+       docker stop lifecycle-demo
+
+       o/p:
+       Exited(137)
+
+6. Restart the container
+
+       docker restart lifecycle-demo
+
+       o/p:
+        Up 2 seconds
+
+7. Kill the container: immediate termination
+
+       docker kill lifecycle-demo
+
+8. Remove the container
+
+       docker rm lifecycle-demo
+
+---
+
+### Task 4: Working with Running Containers
+- Run an Nginx container in detached mode and view its logs
+- View real-time logs (follow mode)
+- Exec into the container and look around the filesystem
+- Run a single command inside the container without entering it
+- Inspect the container — find its IP address, port mappings, and mounts
+
+
+1. Run Nginx Container in Detached Mode
+
+Start container in background:
+
+    docker run -d --name nginx-demo -p 8080:80 nginx
+
+    docker ps -a
+    Status: Up
+    Ports: 0.0.0.0:8080->80/tcp
+
+- -d → Detached Mode : Runs the container in the background.
+- -p → Port Mapping : -p 8080:80
+- Maps - Host Port : Container Port
+    - Meaning:
+    - 80 → Nginx listens inside container
+    - 8080 → Port exposed on your machine
+
+
+2. Run Nginx container in Detached mode
