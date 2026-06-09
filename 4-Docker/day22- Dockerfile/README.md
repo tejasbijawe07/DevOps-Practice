@@ -1,1 +1,198 @@
 ## Dockerfile: Build Your Own Images
+
+- A Dockerfile is a text file that contains instructions for building a Docker image automatically.
+- Without a dockerfile:
+
+      Start container
+             ↓
+      Install software manually
+             ↓
+      Configure things manually
+             ↓
+      Repeat again for every system
+
+- With a dockerfile:
+
+       Write steps once
+             ↓
+        Build image
+             ↓
+       Run anywhere consistently
+
+- Uses:
+    - Automation → no manual setup every time
+    - Consistency → same environment everywhere
+    - Version control → store setup in Git
+    - Easy sharing → teammates can build the same image
+    - Reproducibility → recreate environments anytime
+
+- Docker performs following steps:
+     - Reads Dockerfile: Docker starts reading instructions from top to bottom.
+     - Pulls Base Image: Downloads Ubuntu image if not already available.
+     - Executes Instructions: Creates a temporary container, runs commands, saves changes.
+     - Creates Layers: Each instruction creates a layer
+     - Produces an Image
+     - Run Container from Image
+
+- Real DevOps usecase:
+     - A team wants an app with:
+     - Ubuntu, Java, Maven, Application files
+     - Instead of manually setting up every server:
+
+           FROM ubuntu
+           RUN install java
+           RUN install maven
+           COPY app.jar .
+           CMD run app
+
+     - build and run
+
+           docker build -t app .
+           docker run app
+
+---
+
+### Task 1: Your First Dockerfile
+ - Create a folder called my-first-image
+ - Inside it, create a Dockerfile that:
+      - Uses ubuntu as the base image
+      - Installs curl
+ - Sets a default command to print "Hello from my custom image!"
+ - Build the image and tag it my-ubuntu:v1
+ - Run a container from your image
+
+
+#### 1. Creation of folder
+
+        mkdir my-first-image
+        cd my-first-image
+
+#### 2. Ceate Dockerfile
+
+       FROM ubuntu:latest
+       RUN apt-get update && apt-get install -y curl
+       CMD ["echo", "Hello from my custom image!"]
+
+Understanding the Dockerfile:
+
+a. `FROM ubuntu:latest` :
+    
+  - Tells Docker which base image to start with.
+  - downloads and uses latest version of OS image from Docker hub
+  - Start building my image on top of Ubuntu.
+
+b. `RUN apt-get update && apt-get install -y curl` :
+   
+  - apt-get update: Updates Ubuntu package lists.
+  - &&: Runs second command only if first succeeds.
+  - apt-get install -y curl: Installs curl
+  - This custom image contains curl and any container crated from this image can use `curl --version`
+
+c. `CMD ["echo", "Hello from my custom image!"]` :
+  
+  - Sets the default command when a container starts.
+  - Since echo finishes immediately, the container exits.
+
+
+#### 3. Build the docker image
+
+       docker build -t my-ubuntu:v1 .
+
+Explanation:
+ - -t : adds a tage to the image
+ - my-ubuntu:v1 : image name and version
+ - . : current directory contains Dockerfile
+
+#### 4. Verify image creation
+
+     docker images
+     
+     o/p:
+     IMAGE          ID             DISK USAGE   CONTENT SIZE  
+     my-ubuntu:v1   43a4a4c3781c        254MB           77MB
+
+#### 5. Running container from image
+
+      docker run my-ubuntu:v1
+
+      o/p:
+      Hello from my custom image!
+
+#### 6. container execution history
+
+      docker ps -a
+
+      o/p:
+      CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS       
+      46ec93929bba   my-ubuntu:v1   "echo 'Hello from my…"   11 seconds ago   Exited (0) 10 seconds ago    
+
+---
+
+### Task 2: Dockerfile Instructions
+ - Create a new Dockerfile that uses all of these instructions:
+ - FROM — base image
+ - RUN — execute commands during build
+ - COPY — copy files from host to image
+ - WORKDIR — set working directory
+ - EXPOSE — document the port
+ - CMD — default command
+
+#### 1. Create project folder
+
+     mkdir dockerfile-demo
+     cd dockerfile-demo
+
+#### 2. create a sample file - message.txt
+
+     echo "Docker learning is fun!" > message.txt
+
+#### 3. create Dockerfile
+
+     FROM ubuntu:latest
+     RUN apt-get update && apt-get install -y curl
+     WORKDIR /app
+     COPY message.txt /app/
+     EXPOSE 8080
+     CMD ["cat", "/app/message.txt"]
+
+Understanding each instructions:
+
+a. `FROM ubuntu:latest` :
+ - Selects Ubuntu as the base image.
+ - Docker starts building from this image.
+
+b. `RUN apt-get update && apt-get install -y curl` :
+ - Executes commands during image build.
+ - Updates package lists.
+ - Installs curl inside image.
+
+c. `WORKDIR /app` :
+  - Creates /app directory if needed.
+  - Sets it as current working directory.
+  - Future commands run inside /app.
+
+d. `COPY message.txt /app/` :
+  - Copies file from your computer → image filesystem.
+  - Host machine -> message.txt -> Docker image -> /app/message.txt
+
+e. `EXPOSE 8080` :
+  - Documents that container intends to use port 8080.
+  - Does not actually open port.
+  - Mainly helps documentation and networking.
+
+f. `CMD ["cat", "/app/message.txt"]` :
+  - default command when container starts.
+  - Prints contents of copied file.
+
+
+#### 4. Build Image
+
+      docker build -t docker-demo:v1 .
+
+#### 5. Run container
+
+      docker run docker-demo:v1
+
+#### 6. Image layers: shows how each instruction created a separate image layer.
+
+      docker history docker-demo:v1
