@@ -203,3 +203,88 @@ f. `CMD ["cat", "/app/message.txt"]` :
 - Create an image with `ENTRYPOINT ["echo"]` — run it, then run it with additional arguments. What happens?
 - Write in your notes: When would you use CMD vs ENTRYPOINT?
 
+
+1. Using CMD
+
+       FROM ubuntu:latest
+       CMD ["echo", "hello"]
+
+       docker build -t cmd-demo:v1 .
+       docker run cmd-demo:v1
+
+       o/p:
+       hello
+
+Run with a custom command:
+
+       docker run cmd-demo:v1 ls
+
+       o/p:
+       bin
+       boot
+       dev
+       etc
+
+The custom command (ls) replaced the CMD instruction.
+
+     CMD = default command
+    docker run <image> <command>
+            ↓
+      overrides CMD
+
+2. Using ENTRYPOINT
+
+       FROM ubuntu:latest
+       ENTRYPOINT ["echo"]
+
+       docker build -t entrypoint-demo:v1 .
+       docker run entrypoint-demo:v1
+
+       o/p:
+       blank line because echo runs without arguments
+
+   Run with additional arguments
+
+       docker run entrypoint-demo:v1 hello world
+
+       o/p:
+       hello world
+
+    - The arguments were appended to ENTRYPOINT.
+    - ENTRYPOINT = fixed executable
+    - Arguments passed to docker run are added to it
+
+3. CMD + ENTRYPOINT Together
+
+       FROM ubuntu:latest
+       ENTRYPOINT ["echo"]
+       CMD ["hello"]
+
+       docker run image
+       o/p:
+       hello
+
+       docker run image docker
+       o/p:
+       docker
+
+   - ENTRYPOINT + CMD
+   - echo        hello
+
+| Feature                          | CMD                    | ENTRYPOINT                      |
+| -------------------------------- | ---------------------- | ------------------------------- |
+| Purpose                          | Default command        | Main executable                 |
+| Can be overridden?               | Yes                    | No (unless `--entrypoint` used) |
+| Arguments passed to `docker run` | Replace CMD            | Append to ENTRYPOINT            |
+| Typical use                      | Defaults/configuration | Fixed application               |
+
+- CMD provides a default command that can be easily overridden when starting a container.
+- ENTRYPOINT defines the main executable that always runs; arguments supplied during docker run are appended to it.
+- Use CMD when:
+   - You want a default command.
+   - Users may run different commands.
+- Use ENTRYPOINT when
+   - Container should always run a specific application.
+   - You want extra arguments passed to that application.
+
+---
