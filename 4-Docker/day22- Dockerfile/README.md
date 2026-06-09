@@ -196,3 +196,10 @@ f. `CMD ["cat", "/app/message.txt"]` :
 #### 6. Image layers: shows how each instruction created a separate image layer.
 
       docker history docker-demo:v1
+
+---
+### Task 3: CMD vs ENTRYPOINT
+- Create an image with `CMD ["echo", "hello"]` — run it, then run it with a custom command. What happens?
+- Create an image with `ENTRYPOINT ["echo"]` — run it, then run it with additional arguments. What happens?
+- Write in your notes: When would you use CMD vs ENTRYPOINT?
+
