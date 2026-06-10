@@ -204,7 +204,7 @@ f. `CMD ["cat", "/app/message.txt"]` :
 - Write in your notes: When would you use CMD vs ENTRYPOINT?
 
 
-1. Using CMD
+#### 1. Using CMD
 
        FROM ubuntu:latest
        CMD ["echo", "hello"]
@@ -232,7 +232,7 @@ The custom command (ls) replaced the CMD instruction.
             ↓
       overrides CMD
 
-2. Using ENTRYPOINT
+#### 2. Using ENTRYPOINT
 
        FROM ubuntu:latest
        ENTRYPOINT ["echo"]
@@ -254,7 +254,7 @@ The custom command (ls) replaced the CMD instruction.
     - ENTRYPOINT = fixed executable
     - Arguments passed to docker run are added to it
 
-3. CMD + ENTRYPOINT Together
+#### 3. CMD + ENTRYPOINT Together
 
        FROM ubuntu:latest
        ENTRYPOINT ["echo"]
@@ -290,7 +290,7 @@ Run with arguments
    - You want extra arguments passed to that application.
 
 
-4. Real-world Nginx example:
+#### 4. Real-world Nginx example:
 
 Example Dockerfile:
 
@@ -326,7 +326,7 @@ Run with custom arguments
 
 ---
 
-#### Task 4: Build a Simple Web App Image
+### Task 4: Build a Simple Web App Image
  - Create a small static HTML file (index.html) with any content
  - Write a Dockerfile that:
       - Uses nginx:alpine as base
