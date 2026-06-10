@@ -215,7 +215,7 @@ f. `CMD ["cat", "/app/message.txt"]` :
        o/p:
        hello
 
-Run with a custom command:
+Run with custom command:
 
        docker run cmd-demo:v1 ls
 
@@ -260,16 +260,18 @@ The custom command (ls) replaced the CMD instruction.
        ENTRYPOINT ["echo"]
        CMD ["hello"]
 
-       docker run image
+       docker build -t combined-demo:v1 .
+
+       docker run combined-demo:v1
        o/p:
        hello
 
-       docker run image docker
+Run with arguments
+
+       docker run combined-demo:v1 docker
        o/p:
        docker
 
-   - ENTRYPOINT + CMD
-   - echo        hello
 
 | Feature                          | CMD                    | ENTRYPOINT                      |
 | -------------------------------- | ---------------------- | ------------------------------- |
@@ -287,4 +289,47 @@ The custom command (ls) replaced the CMD instruction.
    - Container should always run a specific application.
    - You want extra arguments passed to that application.
 
+
+4. Real-world Nginx example:
+
+Example Dockerfile:
+
+       FROM nginx:latest
+
+       # ENTRYPOINT ensures nginx always runs
+       ENTRYPOINT ["nginx"]
+
+       # CMD provides default arguments
+       CMD ["-g", "daemon off;"]
+
+ - ENTRYPOINT ["nginx"] : Locks the container to always run the nginx binary.
+ - CMD ["-g", "daemon off;"] : Supplies default arguments telling Nginx to run in the foreground.
+
+Run without arguments
+
+        docker run nginx-demo:v1
+
+- Executes: nginx -g 'daemon off;'
+- Result: Nginx starts and serves content, staying alive in the foreground
+
+
+Run with custom arguments
+
+      docker run nginx-demo:v1 -t
+
+- Executes: nginx -t
+- Result: Nginx runs its configuration test instead of starting the server.
+
+- Summary:
+     - ENTRYPOINT guarantees the container always runs Nginx.
+     - CMD provides sensible defaults (daemon off;), but lets you override them at runtime.
+
 ---
+
+#### Task 4: Build a Simple Web App Image
+ - Create a small static HTML file (index.html) with any content
+ - Write a Dockerfile that:
+      - Uses nginx:alpine as base
+      - Copies your index.html to the Nginx web directory
+ - Build and tag it my-website:v1
+ - Run it with port mapping and access it in your browser
