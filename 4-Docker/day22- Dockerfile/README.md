@@ -333,3 +333,90 @@ Run with custom arguments
       - Copies your index.html to the Nginx web directory
  - Build and tag it my-website:v1
  - Run it with port mapping and access it in your browser
+
+
+#### 1. Project directory:
+
+     mkdir my-website
+     cd my-website
+
+#### 2. Create index.html
+
+      <!DOCTYPE html>
+      <html>
+      <head>
+         <title>My First Docker Website</title>
+      </head>
+      <body>
+         <h1>Hello from Docker and Nginx!</h1>
+         <p>This is my first containerized website.</p>
+      </body>
+      </html>
+
+#### 3. Dockerfile
+
+       FROM nginx:alpine
+       COPY index.html /usr/share/nginx/html/index.html
+
+Understanding dockerfile:
+
+   - `FROM nginx:alpine` :
+         - Uses the official Nginx image.
+         - alpine is a lightweight Linux distribution, making the image smaller.
+   - `COPY` : COPY index.html /usr/share/nginx/html/index.html
+         - Copies your local index.html
+         - Places it in Nginx's default web root directory
+
+          Host Machine
+             index.html
+                ↓
+          Container
+          /usr/share/nginx/html/index.html
+
+#### 4. Build image
+
+         docker build -t my-website:v1 .
+
+#### 5. Run container
+
+        docker run -d -p 8080:80 --name website my-website:v1
+
+  
+  - -d - Run in background
+  - -p 8080:80 - Host Port : Container Port
+  - --name -    Container name(website)
+
+#### 6. verify container
+
+      docker ps
+
+      o/p:
+      CONTAINER ID   IMAGE           CREATED          STATUS          PORT                                      NAME
+      a78dd1154c69   my-website:v1   22 seconds ago   Up 20 seconds   0.0.0.0:8080->80/tcp, [::]:8080->80/tcp   website
+
+       http://localhost:8080
+       Hello from Docker and Nginx!
+       This is my first containerized website.
+
+Useful commands:
+
+      docker logs website         (view logs)
+      docker stop website         (stop container)
+      docker rm website           (remove container)
+      docker rmi my-website:v1    (remove image)
+
+---
+
+### Task 5: .dockerignore
+ - Create a .dockerignore file in one of your project folders
+ - Add entries for: node_modules, .git, *.md, .env
+ - Build the image — verify that ignored files are not included
+
+
+#### What is .dockerignore?
+  - A .dockerignore file works like a .gitignore file.
+  - It tells Docker: not to send these files/folders to the Docker build context."
+  - This:
+     - Makes builds faster
+     - Reduces image size
+     - Prevents secrets from being copied accidentally
