@@ -99,7 +99,7 @@ c. `CMD ["echo", "Hello from my custom image!"]` :
        docker build -t my-ubuntu:v1 .
 
 Explanation:
- - -t : adds a tage to the image
+ - -t : adds a tag to the image
  - my-ubuntu:v1 : image name and version
  - . : current directory contains Dockerfile
 
@@ -360,18 +360,21 @@ Run with custom arguments
 
 Understanding dockerfile:
 
-   - `FROM nginx:alpine` :
-         - Uses the official Nginx image.
-         - alpine is a lightweight Linux distribution, making the image smaller.
-   - `COPY` : COPY index.html /usr/share/nginx/html/index.html
-         - Copies your local index.html
-         - Places it in Nginx's default web root directory
+ - `FROM nginx:alpine` :
+   
+     - Uses the official Nginx image.
+     - alpine is a lightweight Linux distribution, making the image smaller.
+       
+ - `COPY` : COPY index.html /usr/share/nginx/html/index.html
 
-          Host Machine
+     - Copies your local index.html
+     - Places it in Nginx's default web root directory
+
+           Host Machine
              index.html
                 ↓
-          Container
-          /usr/share/nginx/html/index.html
+           Container
+           /usr/share/nginx/html/index.html
 
 #### 4. Build image
 
@@ -420,3 +423,108 @@ Useful commands:
      - Makes builds faster
      - Reduces image size
      - Prevents secrets from being copied accidentally
+
+
+#### 1. Create .dockerignore
+
+Inside your project folder:
+
+      touch .dockerignore
+
+Add:
+
+    node_modules
+    .git
+    *.md
+    .env
+
+
+| Pattern        | Ignored                    |
+| -------------- | -------------------------- |
+| `node_modules` | Dependency folder          |
+| `.git`         | Git repository data        |
+| `*.md`         | All Markdown files         |
+| `.env`         | Environment variable files |
+
+#### 2. Creating test files
+
+     mkdir node_modules         
+     touch README.md
+     touch .env
+     mkdir .git
+     touch app.txt
+
+     Project Structure:
+     project/
+     ├── Dockerfile
+     ├── .dockerignore
+     ├── app.txt
+     ├── README.md
+     ├── .env
+     ├── .git/
+     └── node_modules/
+
+#### 3. create Dockerfile
+
+     FROM ubuntu:latest
+     WORKDIR /app
+     COPY . .      (This copies the entire build context except ignored files.)
+     CMD ["ls", "-la", "/app"]
+
+#### 4. Build Image and run container
+
+      docker build -t ignore-demo:v1 .
+      o/p:
+      Sending build context to Docker daemon  3.5kB
+      
+      docker run --rm ignore-demo:v1
+                                               (README.md
+      o/p:                                     .env
+      total 8                                  .git
+      drwxr-xr-x 2 root root 4096 ...          .node_modules   .dockerignore excluded these)
+      -rw-r--r-- 1 root root    0 app.txt      
+
+---
+
+### Optimized Dockerfile:
+
+       FROM ubuntu:latest
+       RUN apt-get update && apt-get install -y curl
+       WORKDIR /app
+       COPY app.txt .
+       CMD ["cat", "app.txt"]
+
+   - Move frequently changing files to the bottom
+   - If app.txt changes, and we build again:
+
+           Step 1/5 : FROM ubuntu
+            ---> Using cache
+
+           Step 2/5 : RUN apt-get update
+           ---> Using cache
+
+           Step 3/5 : RUN apt-get install -y curl
+           ---> Using cache
+
+           Step 4/5 : COPY app.txt
+           ---> Rebuilding
+   
+   - then docker reuses the unchanged layers:
+       - FROM          Cached
+       - RUN           Cached
+       - WORKDIR       Cached
+       - COPY          Rebuild
+       - CMD           Rebuild
+
+
+#### 1.Why does layer order matter for build speed?
+   - Docker builds images in layers and caches each layer.
+   - If a layer changes, Docker must rebuild that layer and all subsequent layers.
+   - Therefore:
+       - Put rarely changing instructions first.
+       - Put expensive operations (apt-get install, npm install, pip install) early.
+       - Put frequently changing files (COPY . ., source code) near the end.
+   - Layer order matters because Docker reuses cached layers. When a layer changes, all layers after it are rebuilt.
+   - Placing stable instructions first and frequently changing files last maximizes cache reuse and significantly improves build performance.
+
+---
