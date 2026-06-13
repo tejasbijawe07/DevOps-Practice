@@ -119,7 +119,7 @@ Useful sql commands inside container:
 
 ---
 
-### Task 2: Named Volumes
+#### Task 2: Named Volumes
  - Create a named volume
  - Run the same database container, but this time attach the volume to it
  - Add some data, stop and remove the container
