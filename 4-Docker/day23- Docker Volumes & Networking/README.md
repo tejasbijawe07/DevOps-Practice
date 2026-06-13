@@ -128,7 +128,7 @@ Useful sql commands inside container:
 
 - Docker Volumes persist data even when containers are deleted.
 
-1. Create a named Volume
+#### 1. Create a named Volume
 
        docker volume create pgdata
 
@@ -137,4 +137,95 @@ Understanding the command:
  - `docker volume` - Manage Docker volumes
  - `create` - Create a new volume
  - `pgdata` - Name of the volume
+
+Verify: 
+
+      docker volume ls
+      o/p:
+      DRIVER    VOLUME NAME
+      local     pgdata
+
+#### 2. Run PostgreSQL with Volume attached
+
+       docker run -d --name postgres-volume -e POSTGRES_PASSWORD=password -v pgdata:/var/lib/postgresql/18/docker postgres
+
+Understanding command:
+
+| Option                                    | Meaning                     |
+| ----------------------------------------- | --------------------------- |
+| `docker run`                              | Create and start container  |
+| `-d`                                      | Run in background           |
+| `--name postgres-volume`                  | Container name              |
+| `-e POSTGRES_PASSWORD=password`           | Set postgres password       |
+| `-v pgdata:/var/lib/postgresql/18/docker` | Mount volume into container |
+| `postgres`                                | PostgreSQL image            |
+
+
+Understanding the volume mapping:
+
+pgdata:/var/lib/postgresql/18/docker
+
+ - pgdata - Docker volume stored on host.
+ - /var/lib/postgresql/18/docker - Database directory inside container (PGDATA).
+
+#### 3. Create data
+
+     docker exec -it postgres-volume psql -U postgres
+
+| Part              | Meaning                      |
+| ----------------- | ---------------------------- |
+| `docker exec`     | Run command inside container |
+| `-it`             | Interactive terminal         |
+| `postgres-volume` | Container name               |
+| `psql`            | PostgreSQL client            |
+| `-U postgres`     | Login as postgres user       |
+
+
+      CREATE TABLE employees (
+      id SERIAL PRIMARY KEY,
+      name VARCHAR(50)
+      );
+      INSERT INTO employees(name)
+      VALUES ('Tejas');
+      SELECT * FROM employees;
+
+#### 4. Stop and remove the container
+
+     docker stop postgres-volume
+
+     docker rm postgres-volume
+
+#### 5. Creating a new Container
+
+    docker run -d --name postgres-volume-new -e POSTGRES_PASSWORD=password -v pgdata:/var/lib/postgresql/18/docker postgres
+
+
+- Data is still present
+- `docker volume inspect pgdata`
+
+      [
+         {
+          "Name": "pgdata",
+          "Driver": "local",
+          "Mountpoint": "/var/lib/docker/volumes/pgdata/_data"
+         }
+      ]
+
+| Field      | Meaning                 |
+| ---------- | ----------------------- |
+| Name       | Volume name             |
+| Driver     | Storage driver          |
+| Mountpoint | Actual location on host |
+
+
+- The PostgreSQL database files were stored in the Docker volume (pgdata) instead of the container filesystem.
+- Docker Volumes provide persistent storage. Containers can be removed and recreated without losing data, as long as the same volume is attached.
+
+---
+
+#### Task 3: Bind Mounts
+- Create a folder on your host machine with an index.html file
+- Run an Nginx container and bind mount your folder to the Nginx web directory
+- Access the page in your browser
+- Edit the index.html on your host — refresh the browser
 
