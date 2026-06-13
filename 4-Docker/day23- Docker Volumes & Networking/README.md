@@ -99,3 +99,42 @@ Useful sql commands inside container:
        o/p:
        ERROR: relation "employees" does not exist
 
+- The sql data is gone.
+- The PostgreSQL database files were stored inside the container's writable layer.
+- When container was removed, docker deleted container, its filesystem and all databse files.
+- Containers are Ephemeral(temporary); when container deleted, data is also deleted.
+- Containers should not be used for permanent storage. Use Docker Volumes to persist data beyond the life of a container.
+
+
+#### 8. Verify where PostgreSQL stores its data:
+
+       docker inspect postgres-demo
+       
+       docker exec -it postgres-demo bash ...(inside container)
+
+ - PostgreSQL stores its database files in:
+      - "PGDATA=/var/lib/postgresql/18/docker"
+ - Without a volume: deleting the container deletes the data.
+ - With a volume mounted to PGDATA: data survives container deletion.
+
+---
+
+### Task 2: Named Volumes
+ - Create a named volume
+ - Run the same database container, but this time attach the volume to it
+ - Add some data, stop and remove the container
+ - Run a brand new container with the same volume
+ - Is the data still there?
+
+- Docker Volumes persist data even when containers are deleted.
+
+1. Create a named Volume
+
+       docker volume create pgdata
+
+Understanding the command:
+
+ - `docker volume` - Manage Docker volumes
+ - `create` - Create a new volume
+ - `pgdata` - Name of the volume
+
