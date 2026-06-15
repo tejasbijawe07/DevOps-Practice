@@ -229,3 +229,124 @@ pgdata:/var/lib/postgresql/18/docker
 - Access the page in your browser
 - Edit the index.html on your host — refresh the browser
 
+
+#### a. What is a Bind Mount?
+
+- A bind mount is a Docker storage mechanism that connects a specific file or directory on the host machine to a directory or file inside a container.
+- Any change made on the host are immediately visible inside the container.
+- Syntax: `docker run -v <host-path>:<container-path> <image>`
+- `$(pwd)` = current directory on the host machine.
+- `/usr/share/nginx/html` = Nginx web directory inside the container.
+- Bind Mount flow:
+
+         Host Machine
+         ┌─────────────────────┐
+         │ index.html          │
+         │ style.css           │
+         └─────────┬───────────┘
+                   │ Bind Mount
+                   ▼
+         Container
+         ┌─────────────────────┐
+         │ /usr/share/nginx/html
+         │ index.html          │
+         │ style.css           │
+         └─────────────────────┘
+
+#### b. Why Do We Use Bind Mounts?
+
+- Live Code Development: Developers can edit source code on the host and immediately see changes inside the container.
+- Example: `docker run -v $(pwd):/app node-app`
+  
+- Share Configuration Files: Mount configuration files from the host.
+- Example: `docker run -v /home/user/nginx.conf:/etc/nginx/nginx.conf nginx`
+
+- Persistent data: Files remain on the host even if the container is deleted.
+
+- Log Collection: Store application logs directly on the host.
+- `docker run -v /var/log/myapp:/logs myapp`
+
+
+
+
+#### 1. Creating folder and index.html file
+
+
+       mkdir nginx-site
+       cd nginx-site
+
+       echo "<h1>Hello from Bind Mount</h1>" > index.html
+
+#### 2. Run Nginx container with a bind mount
+
+
+      docker run -d --name nginx-bind -p 8080:80 -v $(pwd):/usr/share/nginx/html nginx
+
+Understanding the command:
+
+| Option                            | Meaning                                               |
+| --------------------------------- | ----------------------------------------------------- |
+| `docker run`                      | Create and start a container                          |
+| `-d`                              | Run in background (detached mode)                     |
+| `--name nginx-bind`               | Container name                                        |
+| `-p 8080:80`                      | Map host port 8080 to container port 80               |
+| `-v $(pwd):/usr/share/nginx/html` | Bind mount current host directory into Nginx web root |
+| `nginx`                           | Nginx image                                           |
+
+#### 3. Access the page
+
+    http://localhost:8080
+
+#### 4. Modify the file on the host
+
+      echo "<h1>Updated from Host Machine</h1>" > index.html
+
+- The changes appear immediately.
+- Reason: The container is directly reading files from the host directory through the bind mount.
+
+#### 5. Verify mounts
+
+     docker inspect nginx-bind
+
+     o/p:
+     "Mounts": [
+            {
+                "Type": "bind",
+                "Source": "/home/dell/nginx-site",
+                "Destination": "/usr/share/nginx/html",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+            }
+        ]
+
+### Bind Mounts vs Named Volumes:
+
+| Feature               | Named Volume                      | Bind Mount                      |
+| --------------------- | --------------------------------- | ------------------------------- |
+| Storage Location      | Managed by Docker                 | Specific host directory         |
+| Created By            | Docker                            | User                            |
+| Host Path Required    | No                                | Yes                             |
+| Easy Backup/Migration | Yes                               | Manual                          |
+| Performance           | Usually better                    | Depends on host filesystem      |
+| Access from Host      | Harder                            | Direct access                   |
+| Typical Use           | Database data, persistent storage | Source code, configs, web files |
+| Managed Using         | `docker volume` commands          | Normal filesystem tools         |
+
+
+- Example:
+
+   1. Named Volume- Docker manages where the data is stored.
+
+          docker volume create mydata
+
+          docker run -v mydata:/var/lib/postgresql/data postgres
+
+   2. Bind Mount- The container directly uses files from your current host directory.
+
+           docker run -v $(pwd):/app nginx
+
+- Named Volume: Docker-managed storage used mainly for persistent application data.
+- Bind Mount: Maps a specific host directory/file into a container, allowing real-time access and modification from the host system.
+
+---
