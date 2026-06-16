@@ -350,3 +350,116 @@ Understanding the command:
 - Bind Mount: Maps a specific host directory/file into a container, allowing real-time access and modification from the host system.
 
 ---
+
+#### Task 4: Docker Networking Basics
+ - List all Docker networks on your machine
+ - Inspect the default bridge network
+ - Run two containers on the default bridge — can they ping each other by name?
+ - Run two containers on the default bridge — can they ping each other by IP?
+
+
+#### 1. What is Docker Networking?
+
+- Docker networking allows containers to communicate:
+    - With each other
+    - With the Docker host
+    - With external networks (Internet)
+
+- Every container gets its own:
+    - Network namespace
+    - IP address
+    - Network interfaces
+    - Routing table
+
+
+#### 2. Why docker networking is needed?
+
+        Container A (Web App)
+                |
+                |
+        Container B (Database)
+
+  - The web application must connect to the database.
+  - Docker networking provides the communication channel between them.
+
+
+#### 3. Types of docker Networks
+
+`docker network ls`:
+
+     NETWORK ID     NAME      DRIVER
+     xxxxxx         bridge    bridge
+     xxxxxx         host      host
+     xxxxxx         none      null
+
+
+A. Bridge Network: Default network for containers.
+
+       Container A ----+
+                       |
+                  Docker Bridge
+                       |
+       Container B ----+
+
+Features:
+  - Containers get private IP addresses.
+  - Containers can communicate with each other.
+  - Internet access is available through NAT.
+  - Host can access containers through published ports.
+
+Example:
+ 
+     docker run -d --name web nginx
+     docker run -d --name db postgres
+
+     Both are attached to the default bridge network.
+
+
+B. Host Network: Container uses the host's network stack directly.
+
+   - No separate container IP.
+   - Example: `docker run --network host nginx`
+   - Benefits: Better performance, No port mapping required.
+
+
+C. None Network: No networking.
+
+   - Example: `docker run --network none ubuntu`
+   - Used for: Security, Offline processing.
+
+
+#### 4. What is a Bridge?
+
+  - A bridge is a virtual network switch created by Docker.
+
+          Docker Bridge (docker0)
+                  |
+          -------------------------
+          |           |           |
+         Container1 Container2 Container3
+
+ - The bridge forwards traffic between connected containers.
+
+
+#### 5. Default Bridge Network?
+- Docker automatically creates: bridge.
+- `docker network inspect bridge`
+- Subnet: 172.17.0.0/16 ; Gateway: 172.17.0.1
+- Example: Container1 → 172.17.0.2 ; Container2 → 172.17.0.3
+
+
+#### 6. How communication works?
+
+ - Container1 → 172.17.0.2
+ - Container2 → 172.17.0.3
+ - Container1 sends traffic: ping 172.17.0.3
+
+        Container1
+           |
+        Virtual Ethernet (veth)
+           |
+        Docker Bridge (docker0)
+           |
+        Virtual Ethernet (veth)
+           |
+        Container2
