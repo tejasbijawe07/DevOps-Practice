@@ -613,9 +613,16 @@ Inside container1:
     64 bytes from app2.my-app-net: icmp_seq=2 ttl=64 time=0.1 ms
 
 
-- When we create a user-defined bridge network.
-- Docker automatically enables an internal DNS server.
+- When we create a user-defined bridge network, Docker automatically enables an internal DNS server.
+
+        app1  ---> Docker DNS ---> app2 IP
+  
 - So containers can find each other using names.
 
+- Default bridge is created automatically by Docker for backward compatibility which:
+     - Assigns IP addresses
+     - Allows IP-based communication
+     - Does NOT provide automatic DNS-based name resolution
+     - so `ping app2` fails on default bridge, but `ping 172.17.0.3` works.
 
 
