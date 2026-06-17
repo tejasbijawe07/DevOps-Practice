@@ -463,3 +463,98 @@ C. None Network: No networking.
         Virtual Ethernet (veth)
            |
         Container2
+
+---
+
+#### TASK:
+
+#### 1. List docker networks
+
+    docker network ls
+
+    o/p:
+    NETWORK ID     NAME      DRIVER    SCOPE
+    a1b2c3d4e5f6   bridge    bridge    local
+    b2c3d4e5f6g7   host      host      local
+    c3d4e5f6g7h8   none      null      local
+
+| Network | Purpose                        |
+| ------- | ------------------------------ |
+| bridge  | Default network for containers |
+| host    | Container shares host network  |
+| none    | No networking                  |
+
+
+#### 2. Inspect the default bridge network
+
+    docker network inspect bridge
+
+    Information Displayed
+    Network subnet
+    Gateway IP
+    Connected containers
+    Driver type
+    Network settings
+
+
+#### 3. Run two containers on default bridge
+
+     docker run -dit --name container1 ubuntu bash
+
+     docker run -dit --name container2 ubuntu bash
+
+
+#### 4. Can they ping each other by name
+
+  - Enter Container1:
+
+        docker exec -it container1 bash
+
+  - Install ping:
+
+        apt update && apt install -y iputils-ping
+        ping container2
+
+        o/p:
+        ping: container2: Name or service not known
+
+  - The default bridge network does NOT provide automatic DNS name resolution between containers. Only IP communication works.
+
+
+#### 5. Can they ping each other by IP
+
+  - Find Container2 IP:
+
+        docker inspect container2
+
+        docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' container2
+
+        o/p:
+        "Gateway": "172.17.0.3"
+
+
+   - From Container1:
+
+         ping 172.17.0.3
+         o/p:
+         64 bytes from 172.17.0.3: icmp_seq=1 ttl=64 time=0.1 ms
+
+   - Containers on the same bridge network can communicate using IP addresses.
+
+
+ #### Why does ping by name fail on the default bridge network?
+
+Because the default bridge network does not provide Docker DNS-based service discovery. Containers can communicate only through IP addresses unless a user-defined bridge network is created.
+
+---
+
+
+#### Task 5: Custom Networks
+- Create a custom bridge network called my-app-net
+- Run two containers on my-app-net
+- Can they ping each other by name now?
+- Write in your notes: Why does custom networking allow name-based communication but the default bridge doesn't?
+
+
+
+
