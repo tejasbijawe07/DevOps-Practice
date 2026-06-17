@@ -556,5 +556,66 @@ Because the default bridge network does not provide Docker DNS-based service dis
 - Write in your notes: Why does custom networking allow name-based communication but the default bridge doesn't?
 
 
+#### 1. Create a Custom Bridge network
+
+
+     docker network create my-app-net
+
+Understanding the command:
+- `docker network` → Manage Docker networks.
+- `create` → Create a new network.
+- `my-app-net` → Name of the network.
+
+Verify:
+
+    docker network ls
+
+    o/p:
+    NETWORK ID     NAME         DRIVER    SCOPE
+    0b8e2afe687f   bridge       bridge    local
+    55450bf756f9   host         host      local
+    6102a4dc21b7   my-app-net   bridge    local
+    3015c371336c   none         null      local
+
+
+#### 2. Run two Containers on custom network
+
+    docker run -dit --name app1 --network my-app-net ubuntu bash
+    docker run -dit --name app2 --network my-app-net ubuntu bash
+
+Understanding the command:
+- `-d` → Detached mode.
+- `-i` → Interactive.
+- `-t` → Terminal.
+- `--name` → Assign container name.
+- `--network my-app-net` → Connect container to custom network.
+
+
+#### 3. Install Ping
+
+Inside app1:
+
+    docker exec -it app1 bash
+
+Install ping:
+
+    apt update && apt install -y iputils-ping
+
+
+#### 4. Ping by container name
+
+Inside container1:
+
+    ping app2
+    o/p:
+    PING app2 (172.18.0.3) 56(84) bytes of data.
+    64 bytes from app2.my-app-net: icmp_seq=1 ttl=64 time=0.1 ms
+    64 bytes from app2.my-app-net: icmp_seq=2 ttl=64 time=0.1 ms
+
+
+- When we create a user-defined bridge network.
+- Docker automatically enables an internal DNS server.
+- So containers can find each other using names.
+
 
 
