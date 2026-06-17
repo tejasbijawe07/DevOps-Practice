@@ -625,4 +625,10 @@ Inside container1:
      - Does NOT provide automatic DNS-based name resolution
      - so `ping app2` fails on default bridge, but `ping 172.17.0.3` works.
 
+---
+
+
+- Why does custom networking allow name-based communication but the default bridge doesn't?
+
+User-defined bridge networks include Docker's built-in DNS service, which automatically resolves container names to IP addresses. The default bridge network does not provide this DNS-based service discovery, so containers can communicate only through IP addresses unless a custom bridge network is used.
 
