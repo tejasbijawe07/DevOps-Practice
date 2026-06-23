@@ -30,3 +30,69 @@ Task 2: Your First Compose File
 - Stop it with docker compose down
 
 
+#### 1. Create a project folder
+
+        mkdir compose-basics
+        cd compose-basics
+
+
+#### 2. Create `docker-compose.yml`
+
+      nano docker-compose.yml
+
+      services:
+        nginx:
+          image: nginx:latest
+          container_name: nginx-compose
+          ports:
+            - "8080:80"
+
+
+Understanding YAML file:
+
+ - `services`: Defines the containers managed by Compose.
+ - `nginx` : Service name.
+ - `image: nginx:latest` : Pull and run the latest Nginx image.
+ - `container_name: nginx-compose` : Assign a custom container name.
+ - `8080` = Host machine port ; `80` = Container port
+
+
+#### 3. Validate compose file - checks YAML syntax.
+
+        docker compose config
+
+
+#### 4. Start container
+
+        docker compose up
+
+        o/p:
+        [+] Running 1/1
+         ✔ Container nginx-compose Started
+
+
+#### 5. Access Nginx in Browser
+
+       http://localhost:8080
+
+
+#### 6. Check running containers
+
+       docker ps
+       CONTAINER ID   IMAGE          PORTS
+       xxxxx          nginx:latest   0.0.0.0:8080->80/tcp
+
+
+#### 7. Stop the compose application
+
+       docker compose down
+       [+] Running 1/1
+        ✔ Container nginx-compose Removed
+
+
+Summary:
+
+- `docker compose up` → Create and start containers.
+- `docker compose up -d` → Run in background (detached mode).
+- `docker compose down` → Stop and remove containers, networks created by Compose.
+- Compose reads the `docker-compose.yml` file automatically from the current directory.
