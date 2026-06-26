@@ -113,3 +113,145 @@ Summary:
 
         mkdir wordpress-compose
         cd wordpress-compose
+
+
+#### 2. Create docker-compose.yml
+
+        nano docker-compose.yml
+
+
+       services:
+          db:
+            image: mysql:8.0
+            container_name: wordpress-db
+            restart: always
+            environment:
+               MYSQL_ROOT_PASSWORD: rootpassword
+               MYSQL_DATABASE: wordpress
+               MYSQL_USER: wpuser
+               MYSQL_PASSWORD: wppassword
+            volumes:
+              - db_data:/var/lib/mysql
+
+          wordpress:
+             image: wordpress:latest
+             container_name: wordpress-app
+             restart: always
+             depends_on:
+               - db
+             ports:
+               - "8080:80"
+             environment:
+               WORDPRESS_DB_HOST: db:3306
+               WORDPRESS_DB_NAME: wordpress
+               WORDPRESS_DB_USER: wpuser
+               WORDPRESS_DB_PASSWORD: wppassword
+
+       volumes:
+         db_data:
+
+
+Understanding the yaml file:
+
+- #### MySQL Service - 
+     - `db:` : Service name used by WordPress to connect.
+     - `image: mysql:8.0` :  Runs the MySQL image.
+     - `environment:` : Creates:
+                 - Root password
+                 - Database
+                 - User
+                 - Password
+     - `volumes: - db_data:/var/lib/mysql` : Stores MySQL database files in a named volume.
+
+- #### WordPress Service -
+     - `depends_on: - db` : Starts MySQL before WordPress.
+     - `WORDPRESS_DB_HOST: db:3306` : db is the service name, which Compose automatically resolves to the MySQL container.
+     - `ports: - "8080:80"` : Maps:
+                  - Host port 8080
+                  - Container port 80.
+     
+- #### Named Volume -
+     - `volumes: db_data:` : Creates a Docker-managed named volume.
+
+
+#### 3. Validate compose file
+
+      docker compose config
+
+#### 4. start the application
+
+     docker compose up -d
+
+     o/p:
+     Creating network "wordpress-compose_default"
+     Creating volume "wordpress-compose_db_data"
+     Creating wordpress-db
+     Creating wordpress-app
+
+
+#### 5. verify network
+
+    docker network ls
+    docker network inspect wordpress-compose_default
+
+#### 6. verify volume
+
+    docker volume ls
+    docker volume inspect wordpress-compose_db_data
+
+#### 7. open wordpress
+
+    http://localhost:8080
+
+#### 8. verify container communication
+
+    docker exec -it wordpress-app bash
+
+    ping:
+    ping db
+
+- This works because Compose automatically creates a DNS entry for each service name.
+
+
+#### 9. stop container
+
+    docker compose down
+
+- If we restart this container again and open wordpress site, the installation wizard for wordpress won't appear again as it was configured previously and the MySQL database data is stored in named volume.
+
+
+#### verify persistence
+
+    docker volume ls
+
+    docker volume inspect wordpress-compose_db_data ... (volume still exists)
+
+- How Compose connects container
+
+                  Docker Compose
+
+      +-----------------------------+
+      |     Default Network         |
+      |                             |
+      |   wordpress -----> db       |
+      |      |             |        |
+      +-----------------------------+
+
+      Service Name = db
+      Hostname     = db
+      Port         = 3306
+
+  - WordPress connects to MySQL using the hostname db, without needing to know the container's IP address.
+
+ 
+#### Summary:
+ - Created a docker-compose.yml
+ - Started WordPress and MySQL with docker compose up -d
+ - Accessed WordPress at http://localhost:8080
+ - Completed the WordPress setup
+ - Confirmed both containers are on the same Compose network
+ - Verified the db_data named volume exists
+ - Ran docker compose down and docker compose up -d
+ - Confirmed WordPress data persisted (the setup wizard did not reappear)
+
+---
