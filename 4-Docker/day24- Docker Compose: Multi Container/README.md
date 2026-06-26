@@ -4,7 +4,7 @@
 - Previously we manually created networks and volumes and ran containers one by one. Docker Compose does all of that in one YAML file.
 
 
-Task 1: Install & Verify
+#### Task 1: Install & Verify
 - Check if Docker Compose is available on your machine
 - Verify the version
 
@@ -22,7 +22,7 @@ Task 1: Install & Verify
 
 ---
 
-Task 2: Your First Compose File
+#### Task 2: Your First Compose File
 - Create a folder compose-basics
 - Write a docker-compose.yml that runs a single Nginx container with port mapping
 - Start it with docker compose up
@@ -96,3 +96,20 @@ Summary:
 - `docker compose up -d` → Run in background (detached mode).
 - `docker compose down` → Stop and remove containers, networks created by Compose.
 - Compose reads the `docker-compose.yml` file automatically from the current directory.
+
+---
+
+#### Task 3: Two-Container Setup
+- Write a docker-compose.yml that runs:
+     - A WordPress container
+     - A MySQL container
+- They should:
+     - Be on the same network (Compose does this automatically)
+     - MySQL should have a named volume for data persistence
+     - WordPress should connect to MySQL using the service name
+
+
+#### 1. Create a project folder
+
+        mkdir wordpress-compose
+        cd wordpress-compose
