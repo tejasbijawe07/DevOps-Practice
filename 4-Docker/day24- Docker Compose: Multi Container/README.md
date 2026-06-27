@@ -243,15 +243,83 @@ Understanding the yaml file:
 
   - WordPress connects to MySQL using the hostname db, without needing to know the container's IP address.
 
+---
+
+#### Task 4: Compose Commands
+
+#### 1. Start service in detached mode
+
+       docker compose up -d
+
+- Starts all services defined in `docker-compose.yml`.
+- `-d` (detached mode) runs containers in the background.
+- terminal is free to use for other commands.
+
+
+#### 2. view running services
+
+      docker compose ps
+
+- Shows only the services in the current Compose project.
+- Displays:
+     - Container name
+     - Status
+     - Ports
  
-#### Summary:
- - Created a docker-compose.yml
- - Started WordPress and MySQL with docker compose up -d
- - Accessed WordPress at http://localhost:8080
- - Completed the WordPress setup
- - Confirmed both containers are on the same Compose network
- - Verified the db_data named volume exists
- - Ran docker compose down and docker compose up -d
- - Confirmed WordPress data persisted (the setup wizard did not reappear)
+
+#### 3. view logs of all services
+
+    docker compose logs
+
+Displays logs from every service in the Compose application.
+
+
+#### 4. view logs of specific service
+
+    docker compose logs wordpress
+
+    docker compose logs -f wordpress ... (follow live logs)
+
+
+#### 5. stop/restart services without removing containers
+
+    docker compose stop
+
+    docker compose start ...(restart)
+
+#### 6. Remove containers and networks
+
+    docker compose down
+
+- Removes:
+   - Containers
+   - Default network
+
+- Keeps:
+   - Named volumes
+   - Images
+
+ - To remove name volumes:
+
+       docker compose down -v
+
+#### 7. Rebuild images after making changes
+
+       docker compose build
+       docker compose up -d ...(restart)
+
+- build rebuilds the image from the Dockerfile.
+- Note: In the WordPress + MySQL example, we are using prebuilt images (`image:`), so `docker compose build` has no effect. It becomes useful when Compose file contains something like:
+
+       services:
+         web:
+           build: .
 
 ---
+
+#### Task 5: Environment Variables
+- Add environment variables directly in your docker-compose.yml
+- Create a .env file and reference variables from it in your compose file
+- Verify the variables are being picked up
+
+
