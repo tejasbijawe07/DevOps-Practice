@@ -323,3 +323,148 @@ Displays logs from every service in the Compose application.
 - Verify the variables are being picked up
 
 
+#### 1. Environment Variables in docker-compose.yml
+
+       cd wordpress-compose
+
+       nano docker-compose.yml
+
+
+       services:
+          db:
+            image: mysql:8.0
+            restart: always
+            environment:
+              MYSQL_ROOT_PASSWORD: rootpassword
+              MYSQL_DATABASE: wordpress
+              MYSQL_USER: wpuser
+              MYSQL_PASSWORD: wppassword
+          volumes:
+              - db_data:/var/lib/mysql
+
+        wordpress:
+          image: wordpress:latest
+          restart: always
+          depends_on:
+            - db
+          ports:
+            - "8080:80"
+          environment:
+            WORDPRESS_DB_HOST: db:3306
+            WORDPRESS_DB_NAME: wordpress
+            WORDPRESS_DB_USER: wpuser
+            WORDPRESS_DB_PASSWORD: wppassword
+
+       volumes:
+         db_data:
+
+
+#### 2. Using a .env file
+
+       nano .env
+
+       MYSQL_ROOT_PASSWORD=rootpassword
+       MYSQL_DATABASE=wordpress
+       MYSQL_USER=wpuser
+       MYSQL_PASSWORD=wppassword
+
+       WORDPRESS_DB_PORT=3306
+       HOST_PORT=8080
+
+Updating docker-compose.yml with variable:
+
+    services:
+      db:
+       image: mysql:8.0
+       restart: always
+       environment:
+          MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+          MYSQL_DATABASE: ${MYSQL_DATABASE}
+          MYSQL_USER: ${MYSQL_USER}
+          MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+       volumes:
+          - db_data:/var/lib/mysql
+
+     wordpress:
+         image: wordpress:latest
+         restart: always
+         depends_on:
+           - db
+         ports:
+           - "${HOST_PORT}:80"
+         environment:
+           WORDPRESS_DB_HOST: db:${WORDPRESS_DB_PORT}
+           WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
+           WORDPRESS_DB_USER: ${MYSQL_USER}
+           WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
+
+    volumes:
+      db_data:
+
+Docker Compose automatically loads the .env file if it is in the same directory as docker-compose.yml. 
+
+
+#### 3. Verify variables
+
+       docker compose config
+
+       environment:
+         MYSQL_DATABASE: wordpress
+         MYSQL_ROOT_PASSWORD: rootpassword
+         MYSQL_USER: wpuser
+         MYSQL_PASSWORD: wppassword
+
+${MYSQL_DATABASE} has been replaced with its actual value.
+
+
+#### 4. Verify environment variables inside container
+
+       docker ps
+
+open shell in WordPress container:
+       
+       docker exec -it wordpress-app bash
+
+View environment variables:
+
+       env | grep WORDPRESS
+
+       o/p:
+       WORDPRESS_DB_HOST=db:3306
+       WORDPRESS_DB_NAME=wordpress
+       WORDPRESS_DB_USER=wpuser
+       WORDPRESS_DB_PASSWORD=wppassword
+
+
+#### 5. Verify MySQL Variables
+
+       docker exec -it wordpress-db bash
+
+       env | grep MYSQL
+
+       o/p:
+       MYSQL_DATABASE=wordpress
+       MYSQL_ROOT_PASSWORD=rootpassword
+       MYSQL_USER=wpuser
+       MYSQL_PASSWORD=wppassword
+
+#### Why Use a .env File?
+  - Keeps sensitive values out of `docker-compose.yml`.
+  - Makes it easy to change configuration without editing YAML.
+  - For different environments (development, testing, production) can use different values by providing different .env files.
+
+
+Summary:
+
+| Command                                       | Purpose                                                                     |
+| --------------------------------------------- | --------------------------------------------------------------------------- |
+| `nano .env`                                   | Create or edit the `.env` file                                              |
+| `docker compose up -d`                        | Start services                                                              |
+| `docker compose config`                       | Display the fully resolved Compose configuration with variables substituted |
+| `docker exec -it <container> bash`            | Open a shell inside a container                                             |
+| `env`                                         | Display all environment variables                                           |
+| `env \| grep WORDPRESS`                       | Show WordPress-related environment variables                                |
+| `env \| grep MYSQL`                           | Show MySQL-related environment variables                                    |
+| `docker compose down && docker compose up -d` | Recreate containers after changing environment variables                    |
+
+---
