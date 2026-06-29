@@ -1,0 +1,69 @@
+services:
+
+  app:
+    build: .
+   
+
+    ports:
+      - "5000:5000"
+
+    environment:
+      DB_HOST: postgres
+      REDIS_HOST: redis
+
+    depends_on:
+      postgres:
+         condition: service_healthy
+      redis:
+         condition: service_started
+
+    networks:
+      - backend
+
+    labels:
+       project: docker-compose-demo
+       tier: frontend
+
+  postgres:
+    image: postgres:17
+    container_name: postgres-db
+
+    environment:
+       POSTGRES_USER: admin
+       POSTGRES_PASSWORD: password
+       POSTGRES_DB: mydb
+
+
+    volumes:
+      - postgres_data:/var/lib/postgres/data
+
+    networks:
+      - backend
+
+    healthcheck:
+       test: ["CMD-SHELL", "pg_isready -U admin -d mydb"]
+       interval: 10s
+       timeout: 5s
+       retries: 5
+       start_period: 10s
+
+    restart: always
+
+
+  redis:
+    image: redis:8
+
+    container_name: redis-cache
+
+    networks:
+    - backend
+
+    labels:
+      project: docker-compose-demo
+      tier: cache
+
+networks:
+  backend:
+
+volumes:
+  postgres_data:
