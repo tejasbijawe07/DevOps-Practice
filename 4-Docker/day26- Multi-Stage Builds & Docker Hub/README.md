@@ -1,4 +1,4 @@
-### Multi-Stage Builds & Docker Hub
+## Multi-Stage Builds & Docker Hub
 - Today's goal is to build optimized images.
 - Multi-stage builds are how real teams ship small, secure images. Docker Hub is how we distribute them.
 
