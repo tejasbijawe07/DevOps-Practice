@@ -59,10 +59,17 @@ Understading Dockerfile:
      - This makes rebuilds much faster.
 
 - `CMD ["npm", "start"]` - Defines the default command that runs when a container starts, which executes the "start" script from package.json.
-  
+
+
 #### 3. Build the image-
 
       docker build -t node-single .
+
+
+- `docker build` - tells docker to create an image from Dockerfile.
+- `-t` - adds a tag(name) to image. 
+- `.` - use the current directory as build context.
+
 
 #### 4. Run the container-
 
@@ -71,6 +78,9 @@ Understading Dockerfile:
        > hello-node@1.0.0 start
        > node app.js
        Hello from Docker!
+
+- `--rm` - automatically removes the container after it stops.
+
 
 #### 5. check image size
 
@@ -81,3 +91,14 @@ Understading Dockerfile:
 #### why is it so large?
 
 The final image contains: Base Node image, npm, npm cache, package manager, development files, source code, build layers.
+
+
+---
+
+#### Task2: Multi-Stage Build
+ - Rewrite the Dockerfile using multi-stage build:
+ - Stage 1: Build the app (install dependencies, compile)
+ - Stage 2: Copy only the built artifact into a minimal base image (alpine, distroless, or scratch)
+ - Build the image and check its size again
+ - Compare the two sizes
+
