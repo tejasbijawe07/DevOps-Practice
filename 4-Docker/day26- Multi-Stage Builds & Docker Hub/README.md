@@ -209,3 +209,70 @@ Understanding Dockerfile:
 - Pull it on a different machine (or after removing locally) to verify.
 
 
+#### 1. Login from Terminal
+
+    docker login
+
+    verify login
+    docker info
+
+    
+#### 2. local image
+
+    docker images
+
+    REPOSITORY          TAG       IMAGE ID 
+    hello-node-multi    latest    abc12345       
+
+
+#### 3. Tag the image
+
+- dockerhub expects image name in format:
+
+       dockerhub-username/repository:tag
+
+- Syntax:
+
+      docker tag <local-image> <dockerhub-username>/<repository>:<tag>
+      docker tag hello-node-multi tejas123/hello-node-multi:1.0
+
+- verify:
+
+      docker images
+
+      o/p:
+      REPOSITORY                           TAG                 IMAGE ID
+      hello-node-multi:latest              e524556525d6        230MB
+      tejasdevops07/hello-node-multi:1.0   e524556525d6        230MB
+
+Both entries have the same IMAGE ID. Tagging doesn't create another image.
+
+  
+#### 4. Push the image
+
+    docker push tejasdevops07/hello-node-multi:1.0
+
+    Docker uploads each image layer.
+    The push refers to repository [docker.io/tejasdevops07/hello-node-multi]
+    d10ff586f6bd: Pushed
+    84f3f648e286: Pushed
+    55afa1ecc21d: Pushed
+
+
+#### 5. verify by pulling image
+
+- Remove local image:
+
+      docker rmi tejasdevops07/hello-node-multi:1.0
+
+- Pull the image:
+
+      docker pull tejasdevops07/hello-node-multi:1.0
+      o/p:
+      1.0: Pulling from tejas123/hello-node
+      Downloaded newer image
+
+
+---
+
+    
