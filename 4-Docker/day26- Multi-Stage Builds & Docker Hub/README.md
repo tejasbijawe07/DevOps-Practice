@@ -272,7 +272,4 @@ Both entries have the same IMAGE ID. Tagging doesn't create another image.
       1.0: Pulling from tejas123/hello-node
       Downloaded newer image
 
-
----
-
-    
+---    
