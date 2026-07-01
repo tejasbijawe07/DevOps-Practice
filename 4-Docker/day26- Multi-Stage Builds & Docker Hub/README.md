@@ -95,10 +95,117 @@ The final image contains: Base Node image, npm, npm cache, package manager, deve
 
 ---
 
-#### Task2: Multi-Stage Build
+#### Task 2: Multi-Stage Build
  - Rewrite the Dockerfile using multi-stage build:
  - Stage 1: Build the app (install dependencies, compile)
  - Stage 2: Copy only the built artifact into a minimal base image (alpine, distroless, or scratch)
  - Build the image and check its size again
  - Compare the two sizes
+
+
+#### 1. app.json
+
+    console.log("Hello from Docker Multi-Stage Build!");
+
+#### 2. package.json
+
+    {
+    "name": "hello-node",
+    "version": "1.0.0",
+    "main": "app.js",
+    "scripts": {
+      "start": "node app.js"
+     }
+    }
+
+
+#### 3. Multi-Stage Dockerfile
+
+     # ---------- Stage 1 : Build ----------
+     FROM node:22 AS builder
+     WORKDIR /app
+     COPY package*.json ./
+     RUN npm install
+     COPY . .
+
+     # ---------- Stage 2 : Runtime ----------
+     FROM node:22-alpine
+     WORKDIR /app
+     COPY --from=builder /app .
+     CMD ["npm", "start"]
+
+
+Understanding Dockerfile:
+
+- `FROM node:22 AS builder` :
+       - Starts the first build stage using the full Node.js image.
+       - The name builder is just a label.
+       - Install packages
+       - Compile code (if needed)
+       - Perform build tasks
+       - This stage is not included in the final image.
+
+- `WORKDIR /app` : Creates and switches to /app.
+- `COPY . .` : copies remaining file to /app.
+
+
+- `FROM node:22-alpine` :
+        - This starts a new image.
+        - Everything from Stage 1 is discarded unless you explicitly copy it.
+        - `node:22-alpine` is much smaller because it is based on Alpine Linux.
+- `WORKDIR /app` : Creates the working directory inside the new image. This is a completely fresh image. Nothing from Stage 1 exists yet.
+- `COPY --from=builder /app .` : Copy files from the stage named builder into this image.
+
+          Source
+             Builder Stage
+             /app
+
+          Destination
+             Runtime Stage
+             /app
+
+          Without this line, the runtime image would be empty.
+
+- `CMD ["npm", "start"]` : when container runs, docker automatically executes `npm start`, which runs `node app.js`.
+
+
+
+#### Build the image:
+
+      docker build -t hello-node-multi .
+
+      docker images
+      o/p:
+      IMAGE                          ID             DISK USAGE   CONTENT SIZE
+      hello-node-multi:latest        e524556525d6        230MB         57.4MB
+      node-single:latest             f868aa39afef       1.63GB          409MB
+
+
+#### run the container:
+
+
+     docker run --rm hello-node-multi
+     
+     o/p:
+     > hello-node@1.0.0 start
+     > node app.js
+
+     Hello from Docker Multi-Stage Build!
+
+
+#### Why is multi-stageimage smaller?
+- There are two reasons:
+        - Only the runtime environment is kept. The build stage is temporary and is discarded after the build completes.
+        - The runtime uses a minimal base image (`node:22-alpine`) instead of the larger full Linux-based Node.js image.
+
+
+---
+
+#### Task 3: Push to Docker Hub
+- Create a free account on DockerHub
+- Log in from your terminal
+- Tag your image properly: yourusername/image-name:tag
+- Push it to Docker Hub
+- Pull it on a different machine (or after removing locally) to verify.
+
 
