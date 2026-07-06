@@ -26,13 +26,44 @@ Dockerfiles, Multi-stage builds, Non-root users, .dockerignore, Docker Compose, 
                    ▼
            Flask Web Application
                    │
-          SQLAlchemy Database Driver
                    │
                    ▼
             PostgreSQL Database
 
 
+- Application flow:
+
+
+When the application starts-
+
+       Browser
+         |
+       GET /
+         |
+       Flask
+         |
+       SELECT * FROM employees
+         |
+       PostgreSQL
+         |
+       Return employee list
+
+
+When user adds employee-
+
+      Browser
+        |
+      POST /add
+        |
+      Flask
+        |
+      INSERT INTO employees
+        |
+      PostgreSQL
+
+      
 ---
+
 
 #### Task 2: Dockerfile
 
