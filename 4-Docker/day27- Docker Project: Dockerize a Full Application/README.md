@@ -220,6 +220,159 @@ Understanding the error: Flask application depends on a separate PostgreSQL cont
 - Healthchecks on the database
 
 
+Instead of starting multiple containers manually, Compose starts everything with one YAML file.
+
+
+#### 1. docker-compose.yml
+
+     services:
+
+       app:
+         build: .
+
+         container_name: flask-app
+
+         ports:
+           - "5000:5000"
+
+         env_file:
+           - .env
+
+         depends_on:
+           postgres:
+             condition: service_healthy
+
+         networks:
+           - employee-network
+
+     postgres:
+        image: postgres:16-alpine
+        
+        container_name: postgres-db
+        
+        restart: always
+        
+        env_file:
+          - .env
+
+        volumes:
+         - postgres-data:/var/lib/postgresql/data
+
+        healthcheck:
+           test: ["CMD-SHELL", "pg_isready -U postgres"]
+           interval: 10s
+           retries: 5
+           timeout: 5s
+
+        networks:
+           - employee-network
+
+    volumes:
+      postgres-data:
+
+    networks:
+      employee-network:
+
+Understanding compose file:
+
+- services: Defines containers.
+- app: Flask application container.
+- build: Build image from Dockerfile.
+- ports: 5000(host) → 5000(container).
+- env_file: Loads variables from .env
+- depends_on: Waits until database becomes healthy.
+- postgres: Database container.
+- image: Downloads official PostgreSQL image.
+- volumes: Stores database files permanently.
+- networks: Both containers join `employee-network`, Therefore Flask can connect to postgres using hostname instead of IP.
+
+
+#### 2. .env
+
+     DB_HOST=postgres
+     DB_NAME=employees
+     DB_USER=postgres
+     DB_PASSWORD=password123
+
+     POSTGRES_DB=employees
+     POSTGRES_USER=postgres
+     POSTGRES_PASSWORD=password123
+
+
+#### 3. Run everything and check logs
+
+    docker compose up --build
+
+    docker compose ps
+
+    docker compose logs
+
+
+#### Task 4: Ship It
+ - Tag your app image
+ - Push it to Docker Hub
+ - Share the Docker Hub link
+ - Write a README.md in your project with:
+ - What the app does
+ - How to run it with Docker Compose
+ - Any environment variables needed
+
+#### 1. Tag image:
+
+    docker tag employee-app:v1 yourdockerhubusername/employee-app:v1
+
+Creates another name (tag) for the same local image so it matches your Docker Hub repository naming convention.
+
+
+#### 2. Push:
+
+    docker push yourdockerhubusername/employee-app:v1
+
+
+### Architecture:
+
+                     Browser
+                       │
+             http://localhost:5000
+                       │
+         ┌──────────────────────────┐
+         │      Flask Container     │
+         │  employee-app:v1         │
+         └─────────────┬────────────┘
+                       │
+              employee-network
+                       │
+         ┌─────────────▼────────────┐
+         │ PostgreSQL Container     │
+         │ postgres:16-alpine       │
+         └─────────────┬────────────┘
+                       │
+                Named Volume
+               postgres-data
+                       │
+             Employee Records
+
+
+### Summary:
+
+
+| Concept               | Purpose in this project                                                                    |
+| --------------------- | ------------------------------------------------------------------------------------------ |
+| Dockerfile            | Builds the Flask application image                                                         |
+| Multi-stage build     | Keeps the final image smaller by separating dependency installation from the runtime image |
+| Non-root user         | Improves container security                                                                |
+| `.dockerignore`       | Excludes unnecessary files from the build context                                          |
+| Docker Compose        | Orchestrates the Flask app and PostgreSQL together                                         |
+| Custom network        | Enables containers to communicate by service name                                          |
+| Named volume          | Persists PostgreSQL data across container recreation                                       |
+| Environment variables | Keeps configuration separate from application code                                         |
+| Health check          | Ensures the app starts only after PostgreSQL is ready                                      |
+| Docker Hub            | Stores and distributes the application image                                               |
+
+
+
+---
+
 
 
     
