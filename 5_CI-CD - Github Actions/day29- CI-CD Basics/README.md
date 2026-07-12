@@ -4,7 +4,7 @@
 - GitHub Actions, Jenkins, GitLab CI, CircleCI — all are tools that implement CI/CD.
 
 
-#### Task 1: The Problem
+### Task 1: The Problem
 - Think about a team of 5 developers all pushing code to the same repo manually deploying to production.
 - What can go wrong?
 - What does "it works on my machine" mean and why is it a real problem?
@@ -44,7 +44,7 @@ Why it's a real problem:
 With CI/CD automation, teams can safely deploy multiple times per day with consistent, repeatable processes.
 
 
-#### Task 2: CI vs CD
+### Task 2: CI vs CD
 - Continuous Integration — what happens, how often, what it catches
 - Continuous Delivery — how it's different from CI, what "delivery" means
 - Continuous Deployment — how it differs from Delivery, when teams use it
