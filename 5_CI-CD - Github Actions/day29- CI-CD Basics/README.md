@@ -283,3 +283,43 @@ Task 4: Draw a Pipeline
 
 
 ---
+
+#### Task 5: Explore
+- Open any popular open-source repo on GitHub (Kubernetes, React)
+- Find their .github/workflows/ folder
+- Open one workflow YAML file
+- Write in your notes:
+- What triggers it?
+- How many jobs does it have?
+- What does it do?
+
+
+#### Workflow file: runtime_build_and_test.yml (example CI workflow) - https://github.com/react/react/tree/main/.github
+
+#### 1. What triggers it?
+- A push to selected branches.
+- A pull request opened or updated.
+- Some workflows can also be triggered manually (`workflow_dispatch`).
+
+
+#### 2. How many jobs does it have?
+- The workflow contains multiple jobs (around 5–10, depending on the workflow version), including build, test, lint, and other validation jobs that may run in parallel.
+
+
+#### 3. What does it do?
+- Checks out the source code.
+- Sets up the required environment (such as Node.js).
+- Installs project dependencies.
+- Builds the React project.
+- Runs automated tests.
+- Performs linting and other quality checks before allowing changes to be merged.
+
+
+---
+
+
+
+
+
+
+
