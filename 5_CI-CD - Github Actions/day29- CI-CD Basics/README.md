@@ -109,7 +109,7 @@ Summary:
 
 ---
 
-Task 3: Pipeline Anatomy
+### Task 3: Pipeline Anatomy
 - A pipeline has these parts — write what each one does:
 - Trigger — what starts the pipeline
 - Stage — a logical phase (build, test, deploy)
@@ -119,9 +119,167 @@ Task 3: Pipeline Anatomy
 - Artifact — output produced by a job
 
 
+#### 1. Trigger
+
+- A Trigger is the event that starts a CI/CD pipeline automatically. It tells the pipeline when to begin executing.
+
+- Examples:
+    - Code pushed to a Git repository
+    - Pull/Merge Request created
+    - Scheduled (cron) execution
+    - Manual button click
 
 
+#### 2. Stage
+
+- A Stage is a logical phase of the pipeline that groups related jobs together. Stages execute in a defined order, and the next stage usually starts only if the previous one succeeds.
+
+- Common stages:
+   - Build
+   - Test
+   - Deploy
 
 
+#### 3. Job
+
+- A Job is a specific unit of work performed within a stage. A stage can contain one or more jobs, which may run sequentially or in parallel depending on the pipeline configuration.
+
+- Example: In the Test stage:
+   - Unit Test Job
+   - Integration Test Job
+   - Security Scan Job
 
 
+#### 4. Step
+
+- A Step is an individual command or action inside a job. Jobs are made up of one or more steps executed in order.
+
+- Example:
+
+      git checkout
+      pip install -r requirements.txt
+      pytest
+
+
+#### 5. Runner
+
+- A Runner is the machine or agent that executes the pipeline jobs. It receives jobs from the CI/CD platform and performs the required commands.
+
+- Examples:
+   - GitHub Actions Runner
+   - GitLab Runner
+   - Jenkins Agent
+   - Self-hosted Linux server
+
+
+#### 6. Artifact
+
+- An Artifact is a file or collection of files produced by a job and saved for later use. Artifacts can be downloaded, shared between pipeline stages, or used for deployment.
+
+- Examples:
+   - Compiled application (JAR, WAR, EXE)
+   - Docker image metadata
+   - Test reports
+   - Coverage reports
+   - Log files
+
+
+Pipeline Flow Example:
+
+    Trigger
+      │
+      ▼
+    Stage: Build
+      └── Job: Build Application
+            ├── Step: Checkout Code
+            ├── Step: Install Dependencies
+            └── Step: Compile Code
+                  │
+                  ▼
+             Artifact: app.jar
+                  │
+                  ▼
+    Stage: Test
+       └── Job: Run Tests
+            ├── Step: Download Artifact
+            └── Step: Execute Tests
+                  │
+                  ▼
+    Stage: Deploy
+       └── Job: Deploy Application
+             └── Step: Deploy to Production
+
+---
+
+
+Task 4: Draw a Pipeline
+- Draw a CI/CD pipeline for this scenario:
+- A developer pushes code to GitHub. The app is tested, built into a Docker image, and deployed to a staging server.
+- Include at least 3 stages.
+
+
+                    CI/CD Pipeline
+
+        Developer
+            │
+            │ git push
+            ▼
+      ┌─────────────┐
+      │   GitHub    │
+      └─────────────┘
+            │
+            │ Trigger Pipeline
+            ▼
+      ═══════════════════════════════════════════════
+
+      Stage 1: Build
+      ──────────────────────────────────────────────
+      ✓ Checkout source code
+      ✓ Install dependencies
+      ✓ Build application
+
+              │
+              ▼
+
+       Stage 2: Test
+      ──────────────────────────────────────────────
+       ✓ Run unit tests
+       ✓ Run integration tests
+       ✓ Verify build succeeds
+
+              │
+              ▼
+
+      Stage 3: Docker Build
+      ──────────────────────────────────────────────
+      ✓ Build Docker image
+      ✓ Tag image (example: app:v1)
+      ✓ Push image to Docker Registry
+
+             │
+             ▼
+
+      Stage 4: Deploy
+      ──────────────────────────────────────────────
+      ✓ Pull Docker image
+      ✓ Deploy to Staging Server
+      ✓ Perform health check
+
+             │
+             ▼
+
+      Staging Environment
+      ┌─────────────────┐
+      │  Application    │
+      │ Running on      │
+      │ Staging Server  │
+      └─────────────────┘
+
+#### Stages Included:
+ - Build – Compile the application and install dependencies.
+ - Test – Execute automated tests to verify code quality.
+ - Docker Build – Create a Docker image from the application.
+ - Deploy – Deploy the Docker image to the staging server and verify it is running.
+
+
+---
