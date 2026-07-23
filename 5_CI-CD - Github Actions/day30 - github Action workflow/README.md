@@ -138,5 +138,75 @@ How it works:
 - Push again — watch the new run.
 
 
+hello.yml:
 
+    name: Hello Workflow
+
+    on:
+      push:
+
+    jobs:
+      greet:
+      runs-on: ubuntu-latest
+
+      steps:
+        - name: Checkout Repository
+          uses: actions/checkout@v4
+
+        - name: Print Greeting
+          run: echo "Hello from GitHub Actions!"
+
+        - name: Print Current Date and Time
+          run: date
+
+        - name: Print Branch Name
+          run: echo "Branch: ${{ github.ref_name }}"
+
+        - name: List Repository Files
+          run: ls -la
+
+        - name: Print Runner Operating System
+          run: echo "Runner OS: $RUNNER_OS"
+
+
+#### Understanding the workflow:
+
+#### 1. Print current date and Time - Executes the Linux date command. Displays the current date and time on the GitHub Actions runner.
+
+    - name: Print Current Date and Time
+      run: date
+
+#### 2. Print Branch Name - Uses the GitHub Actions context variable github.ref_name. Prints the branch that triggered the workflow.
+
+    - name: Print Branch Name
+      run: echo "Branch: ${{ github.ref_name }}"
+
+#### 3. List repository files - Lists all files and directories in the checked-out repository, including hidden ones like .git and .github.
+
+     - name: List Repository Files
+       run: ls -la
+
+#### 4. Print Runner OS - Uses the predefined environment variable RUNNER_OS. Displays the operating system of the GitHub-hosted runner.
+
+     - name: Print Runner Operating System
+       run: echo "Runner OS: $RUNNER_OS"
+
+#### 5. Verify:
+- Open your repository → Actions → latest Hello Workflow run.
+- these steps execute successfully with green check marks:
+
+      ✔ Checkout Repository
+      ✔ Print Greeting
+      ✔ Print Current Date and Time
+      ✔ Print Branch Name
+      ✔ List Repository Files
+      ✔ Print Runner Operating System
+
+---
+
+#### Task 5: Break It On Purpose
+- Add a step that runs a command that will fail (e.g., exit 1 or a misspelled command)
+- Push and observe what happens in the Actions tab
+- Fix it and push again
+- Write in your notes: What does a failed pipeline look like? How do you read the error?
 
