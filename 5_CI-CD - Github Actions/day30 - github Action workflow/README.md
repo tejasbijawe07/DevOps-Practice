@@ -210,3 +210,41 @@ hello.yml:
 - Fix it and push again
 - Write in your notes: What does a failed pipeline look like? How do you read the error?
 
+
+#### 1. Break the workflow:
+
+     - name: Intentional Failure
+       run: exit 1
+
+#### 2. Observe the failure:
+
+     ✔ Checkout Repository
+     ✔ Print Greeting
+     ❌ Intentional Failure
+
+- All steps after the failed step are skipped because GitHub Actions stops the job when a step exits with a non-zero status.
+- `exit 1`:
+
+      Run exit 1
+      Error: Process completed with exit code 1.
+
+#### 3. Fix the Workflow:
+
+      - name: Intentional Failure
+        run: echo "Fixed!"
+
+What does a failed pipeline look like?
+  - The workflow is marked with a red ❌ in the Actions tab.
+  - The failed job is highlighted.
+  - The specific step that failed is marked with a red ❌.
+  - Steps after the failure are not executed unless explicitly configured to   - continue on error.
+
+---
+
+#### Summary:
+
+- Workflow files live in `.github/workflows/` and must end in `.yml`
+- `uses: actions/checkout@v4` checks out your code onto the runner
+- `run:` executes shell commands.
+- GitHub provides built-in variables like `${{ github.ref_name }}` for branch name.
+- Every push triggers a new run — check the Actions tab.
