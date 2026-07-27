@@ -101,3 +101,64 @@ if branch is `feature/pr-check`, the wrokflow prints: PR check running for branc
 - Set it to run every day at midnight UTC
 - Write in your notes: What is the cron expression for every Monday at 9 AM?
 
+
+#### To add a scheduled trigger in GitHub Actions, use the schedule event with a cron expression.
+
+
+schedule.yml :
+
+    name: Scheduled Workflow
+
+    on:
+      schedule:
+       # Runs every day at 00:00 UTC
+       - cron: '0 0 * * *'
+
+       workflow_dispatch:
+
+    jobs:
+      scheduled-job:
+        runs-on: ubuntu-latest
+
+        steps:
+          - name: Print message
+            run: echo "This workflow was triggered by the schedule."
+
+
+#### Understanding the cron expression:
+
+    0 0 * * *
+    │ │ │ │ │
+    │ │ │ │ └── Day of week (0–7, Sunday = 0 or 7)
+    │ │ │ └──── Month (1–12)
+    │ │ └────── Day of month (1–31)
+    │ └──────── Hour (0–23)
+    └────────── Minute (0–59)
+
+0 0 * * * : Runs every day at 00:00 (midnight) UTC.
+- Minute: 0
+- Hour: 0
+- Every day of the month
+- Every month
+- Every day of the week
+- Scheduled workflows only run after the workflow file has been pushed to the default branch(main). They do not run immediately—you'll need to wait for the scheduled time or trigger them manually if you've included workflow_dispatch.
+
+#### Cron expression for every Monday at 9:00 AM UTC:
+
+    0 9 * * 1
+
+- Explanation:
+- `0` → Minute 0
+- `9` → 09:00
+- `*` → Every day of the month
+- `*` → Every month
+- `1` → Monday
+
+----
+
+#### Task 3: Manual Trigger
+- Create .github/workflows/manual.yml with a workflow_dispatch: trigger
+- Add an input that asks for an environment name (staging/production)
+- Print the input value in a step
+- Go to the Actions tab → find the workflow → click Run workflow
+- Verify: Can you trigger it manually and see your input printed?
