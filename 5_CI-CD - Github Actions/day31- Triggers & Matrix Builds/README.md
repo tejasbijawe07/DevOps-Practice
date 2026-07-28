@@ -162,3 +162,63 @@ schedule.yml :
 - Print the input value in a step
 - Go to the Actions tab → find the workflow → click Run workflow
 - Verify: Can you trigger it manually and see your input printed?
+
+#### The workflow_dispatch event allows to run a workflow manually from the GitHub Actions page and optionally provide inputs.
+
+
+#### 1. create workflow:
+
+manual.yml:
+
+    name: Manual Workflow
+
+    on:
+      workflow_dispatch:
+        inputs:
+          environment:
+           description: "Select deployment environment"
+           required: true
+           default: "staging"
+           type: choice
+           options:
+            - staging
+            - production
+
+     jobs:
+       manual-job:
+        runs-on: ubuntu-latest
+
+        steps:
+          - name: Print selected environment
+            run: | 
+              echo "Environment selected: ${{ github.event.inputs.environment }}"
+
+
+#### 2. commit and push:
+
+    git add .github/workflows/manual.yml
+    git commit -m "Add manual workflow"
+    git push origin main
+
+
+#### 3. Run the workflow manually:
+- Open GitHub repository.
+- Click the Actions tab.
+- Select Manual Workflow from the left sidebar.
+- Click Run workflow.
+- Choose an environment:
+   - staging
+   - production
+- Click Run workflow.
+
+
+### Notes:
+
+#### 1. 21:81 error line too long (82 > 80 characters) (line-length)
+- error is on the echo command: split using multiline run block.
+
+      run: |
+        echo "Environment selected: ${{ github.event.inputs.environment }}"
+
+#### 2. pushed through feature/pr-
+  
