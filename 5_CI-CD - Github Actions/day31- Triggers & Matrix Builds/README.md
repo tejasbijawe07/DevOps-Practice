@@ -220,5 +220,41 @@ manual.yml:
       run: |
         echo "Environment selected: ${{ github.event.inputs.environment }}"
 
-#### 2. pushed through feature/pr-
+
+#### 2. pushed through feature/pr-check branch; merge into main:
+- Switch to `main` : `git checkout main`
+- Pull latest changes: `git pull origin main`
+- merge feature branch: `git merge feature/pr-check`
+- push the updated `main`: `git push origin main`
+
+
+#### 3. updated the file changes from main branch; now as feature/pr-check branch is behind push from feature branch:
+- Using `Rebase`:
+
+      git checkout feature/pr-check
+      git fetch origin
+      git rebase origin/main
+      git push --force-with-lease
+
+- Before rebase:
+
+       A --- B --- C  (main)
+              \
+               D --- E  (feature)
   
+ - using rebase - "I'll temporarily remove D and E, move the branch to C, then replay D and E."
+
+        A --- B --- C --- D' --- E'  (feature)
+
+ - git creates new commits with new commit Id's:
+       - During rebase:
+       - moves HEAD to C
+       - applies changes from D
+       - creates new commit D'
+       - applies changes from E
+       - creates new commit E'
+
+ - we use `git push --force` which replaces whatever is on github with our local branch. so, `git push --force-with-lease` force push only if nobody else has updated the branch since we last fetched it.
+
+
+----
