@@ -258,3 +258,24 @@ manual.yml:
 
 
 ----
+
+#### Task 4: Matrix Builds
+- Create .github/workflows/matrix.yml that:
+- Uses a matrix strategy to run the same job across:
+- Python versions: 3.10, 3.11, 3.12
+- Each job installs Python and prints the version
+- Watch all 3 run in parallel
+- Then extend the matrix to also include 2 operating systems — how many total jobs run now?
+
+
+#### What is Matrix Builds?
+- Matrix builds are one of the most powerful Github Actions feature. Instead of writing same job multiple times, we define a matrix of values and github automatically creates one job for each combination.
+- Without a matrix, we have to write 3 nearly identical jobs:
+    - job-python-310
+    - job-python-311
+    - job-python-312
+- With a matrix, we write job once and github runs it 3 times with different python versions.
+
+
+#### 1. 
+
