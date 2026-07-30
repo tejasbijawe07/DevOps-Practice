@@ -107,4 +107,72 @@ Understanding the yaml file:
 - Write in your notes: Why does it matter that runners come with tools pre-installed?
 
 
+#### 1. preinstalled-tools.yml:
 
+    name: Explore Pre-installed Tools
+
+    on:
+     push:
+
+    jobs:
+     ubuntu-tools:
+       runs-on: ubuntu-latest
+
+       steps:
+        - name: Print Docker version
+          run: docker --version
+
+        - name: Print Python version
+          run: python3 --version
+
+        - name: Print Node.js version
+          run: node --version
+
+        - name: Print Git version
+          run: git --version
+
+
+Understanding file:
+
+1. Print Docker version -
+
+       o/p:
+       docker --version
+       shell: /usr/bin/bash -e {0}
+       Docker version 28.0.4, build b8034c0
+
+2. Print Python version -
+
+       o/p:
+       python3 --version
+       shell: /usr/bin/bash -e {0}
+       Python 3.12.3
+
+3. Print git version -
+
+       o/p:
+       git --version
+       shell: /usr/bin/bash -e {0}
+       git version 2.54.0
+
+- GitHub maintains a list of all software installed on each runner image:
+
+      https://docs.github.com/en/actions/reference/runners/github-hosted-runners?utm_source=chatgpt.com
+
+
+#### Why does it matter that runners come with tools pre-installed?
+- You don't need to install common tools like Git, Docker, Python, Node.js, Java, or .NET before using them.
+- Workflows start faster because setup time is reduced.
+- CI/CD pipelines are simpler and shorter.
+- Builds are more consistent since every GitHub-hosted runner starts from a clean environment with the same pre-installed toolset for that image.
+- You only need to install additional software if your project requires tools that aren't already available.
+
+
+----
+
+### Task 3: Set Up a Self-Hosted Runner
+- Go to your GitHub repo → Settings → Actions → Runners → New self-hosted runner: Choose Linux as the OS
+- Follow the instructions to download and configure the runner on:
+- Your local machine, OR A cloud VM (EC2, Utho, or any VPS)
+- Start the runner — verify it shows as Idle in GitHub
+- Verify: Your runner appears in the Runners list with a green dot.
