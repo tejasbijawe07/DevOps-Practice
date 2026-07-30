@@ -25,3 +25,86 @@
 - we only write the workflow YAML file.
 
 
+#### 1. github-hosted-runners.yml:
+
+    name: GitHub Hosted Runners Demo
+     
+    on:
+      push:
+
+    jobs:
+      ubuntu-job:
+        runs-on: ubuntu-latest
+
+        steps:
+          - name: Print OS
+            run: echo "Operating System: $RUNNER_OS"
+
+          - name: Print Hostname
+            run: hostname
+
+          - name: Print Current User
+            run: whoami
+
+    windows-job:
+      runs-on: windows-latest
+
+      steps:
+        - name: Print OS
+          run: echo "Operating System: $env:RUNNER_OS"
+
+        - name: Print Hostname
+          run: hostname
+
+        - name: Print Current User
+          run: whoami
+
+    macos-job:
+      runs-on: macos-latest
+
+      steps:
+        - name: Print OS
+          run: echo "Operating System: $RUNNER_OS"
+
+        - name: Print Hostname
+          run: hostname
+
+        - name: Print Current User
+          run: whoami
+
+
+Understanding the yaml file:
+- `on: push:` - The workflow starts automatically whenever you push code to the repository.
+- `jobs:` :
+   - Defines all the jobs in the workflow.
+   - There are three independent jobs:
+        - ubuntu-job
+        - windows-job
+        - macos-job
+   - GitHub runs all three in parallel if runners are available.
+- `runs-on` - This tells GitHub which operating system to create for that job.
+- `steps` : Each job contains steps that run one after another.
+   - Print OS: `RUNNER_OS` is a built-in environment variable provided by GitHub.
+   - Print hostname: Displays the name of the temporary virtual machine.
+   - Example: fv-az391-820. Every workflow gets a different hostname because a new VM is created each time.
+   - Print Current user: Shows the user account under which the workflow is running.
+
+
+#### Summary:
+- After pushing the workflow:
+- Open the Actions tab in your GitHub repository.
+- Open the workflow run.
+- three jobs: Ubuntu, Windows, macOS
+- They should all start around the same time, demonstrating parallel execution.
+
+
+----
+
+### Task 2: Explore What's Pre-installed
+- On the ubuntu-latest runner, run a step that prints:
+- Docker version, Python version, Node version, Git version
+- Look up the GitHub docs for the full list of pre-installed software on ubuntu-latest.
+- Write in your notes: Why does it matter that runners come with tools pre-installed?
+
+
+
