@@ -277,5 +277,87 @@ manual.yml:
 - With a matrix, we write job once and github runs it 3 times with different python versions.
 
 
-#### 1. 
+#### 1. Create matrix.yml
 
+    name: Matrix Build
+
+    on:
+      workflow_dispatch:
+
+    jobs:
+      test:
+        runs-on: ${{ matrix.os }}
+
+        strategy:
+          matrix:
+            os: 
+             - ubuntu-latest
+             - windows-latest
+            python-version: 
+             - "3.10"
+             - "3.11"
+             - "3.12"
+
+        steps:
+          - name: Checkout code
+            uses: actions/checkout@v4
+
+          - name: Set up Python
+            uses: actions/setup-python@v5
+            with:
+               python-version: ${{ matrix.python-version }}
+
+          - name: Print Python version
+            run: python --version
+
+
+- `strategy`: causes github to automatically creates three jobs. They run in parallel.
+- 6 jobs are created with 2 OS and 3 python versions.
+- Matrix builds are commonly used to test software across multiple environments:
+    - Multiple Python versions (3.10, 3.11, 3.12)
+    - Multiple Node.js versions (18, 20, 22)
+    - Multiple Java versions (17, 21)
+    - Multiple operating systems (Ubuntu, Windows, macOS)
+- This lets us verify that our code works everywhere without duplicating workflow definitions.
+
+
+----
+
+### Notes:
+
+1. two important matrix features:
+- `exclude` – Skip specific matrix combinations.
+- `fail-fast` – Control whether other matrix jobs stop when one fails.
+
+      strategy:
+        fail-fast: false
+        matrix:
+          os:
+           - ubuntu-latest
+           - windows-latest
+          python-version:
+           - "3.10"
+           - "3.11"
+           - "3.12"
+
+          exclude:
+           - os: windows-latest
+             python-version: "3.10"
+
+      steps:
+       - uses: actions/checkout@v4
+
+       - uses: actions/setup-python@v5
+         with:
+          python-version: ${{ matrix.python-version }}
+
+       - name: Print Python version
+         run: python --version
+
+       - name: Fail on Ubuntu Python 3.11
+         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
+         run: exit 1
+
+2. when ubuntu + python 3.11 fails, the other jobs continue running.
+
+----
