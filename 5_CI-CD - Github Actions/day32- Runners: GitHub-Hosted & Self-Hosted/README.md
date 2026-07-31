@@ -320,6 +320,7 @@ Understanding commands:
 | **Good for**            | General CI/CD, open-source projects, and most workflows without infrastructure management. | Custom environments, private networks, specialized hardware (GPU), long-running jobs, or software not available on GitHub-hosted runners. |
 | **Security concern**    | GitHub secures and isolates the runner; each job gets a fresh VM.                          | You are responsible for securing the machine, patching it, controlling access, and protecting secrets.                                    |
 
+
 ### Summary:
 - GitHub-hosted runners are quick to use, require no maintenance, and are ideal for most CI/CD pipelines.
 - Self-hosted runners provide full control and customization, making them suitable for specialized workloads, private infrastructure, or environments with unique software and hardware requirements.
@@ -327,6 +328,66 @@ Understanding commands:
 
 ----
 
+
 ### Notes:
 
-### 1. 
+### Different options as self-hosted runner:
+
+#### 1. WSL Ubuntu
+- Uses your Windows PC.
+- Runs Linux natively through WSL2.
+- No extra cost.
+- Perfect for Docker, GitHub Actions, Kubernetes, and Linux practice.
+
+
+#### 2. Ubuntu Virtual Machine
+- Install Ubuntu in:
+     - VirtualBox
+     - VMware Workstation
+     - Hyper-V
+- Install the GitHub runner inside the VM.
+
+
+#### 3. AWS EC2
+- Launch: Ubuntu Server
+- t2.micro or t3.micro (Free Tier, if eligible)
+- SSH into it: `ssh -i key.pem ubuntu@<public-ip>`
+- Install the GitHub runner.
+
+
+#### 4. Oracle Cloud Free Tier
+- Oracle offers an Always Free Ubuntu VM.
+- Advantages:
+    - Runs 24/7
+    - Public IP
+    - Good CPU and RAM for learning
+
+
+---
+
+
+#### AWS EC2 Ubuntu instance as Github self-hosted runner:
+
+#### 1. Launch an EC2 Instance
+- In the AWS Console:
+- AMI: Ubuntu Server 24.04 LTS (or 22.04 LTS)
+- Instance type: t3.micro (or t2.micro if available)
+- Key pair: Create or use an existing .pem file.
+- Security Group: SSH (22) → Your IP ; (Optional) HTTP (80)
+- Launch the instance.
+
+
+#### 2. Connect to EC2
+- From your terminal:
+
+      chmod 400 my-key.pem
+      ssh -i my-key.pem ubuntu@<EC2_PUBLIC_IP>
+
+
+#### 3. Create directory for runner
+#### 4. generate runner in github
+#### 5. Run commands provided by github
+#### 6. Configure and start the runner
+#### 7. Verify file on EC2.
+
+---
