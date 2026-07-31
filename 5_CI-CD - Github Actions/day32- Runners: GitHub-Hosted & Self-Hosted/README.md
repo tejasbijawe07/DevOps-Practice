@@ -176,3 +176,157 @@ Understanding file:
 - Your local machine, OR A cloud VM (EC2, Utho, or any VPS)
 - Start the runner — verify it shows as Idle in GitHub
 - Verify: Your runner appears in the Runners list with a green dot.
+
+
+### What is Self-Hosted Runner?
+- Unlike GitHub-hosted runners, a self-hosted runner is a machine that you own and manage. It can be your local PC, a WSL Ubuntu instance, an EC2 instance, or any Linux VM.
+
+
+#### 1. Runner settings
+- Open your GitHub repository.
+- Navigate to:
+- Settings → Actions → Runners → New self-hosted runner
+
+
+#### 2. Select the runner and configure it
+- Operating System: Linux , Architecture: x64 .
+- github displays commands:
+
+      mkdir actions-runner && cd actions-runner
+  
+      curl -o actions-runner-linux-x64-2.336.0.tar.gz -L https://github.com/actions/runner/releases/download/v2.336.0/actions-runner-linux-x64-2.336.0.tar.gz
+  
+      tar xzf ./actions-runner-linux-x64-2.336.0.tar.gz
+
+      ./config.sh --url https://github.com/tejasbijawe07/github-actions-practice --token AVNC5T7MAZCRWILZVYTUY6LKNQPD2
+
+- Enter the name of the runner group to add this runner to: [press Enter for Default]
+- Enter the name of runner: [press Enter for DESKTOP-T5F9213]
+- This runner will have the following labels: 'self-hosted', 'Linux', 'X64'
+Enter any additional labels (ex. label-1,label-2): [press Enter to skip]
+- Enter name of work folder: [press Enter for _work]
+
+
+#### 3. Start the Runner
+
+     ./run.sh
+
+     √ Connected to GitHub
+     Current runner version: '2.336.0'
+     2026-07-31 03:18:43Z: Listening for Jobs
+     2026-07-31 03:30:02Z: Running job: self-hosted-job
+
+#### 4. verify in github
+
+    Settings → Actions → Runners
+
+    ✓ my-runner
+      Status: Idle
+
+
+---
+
+### Task 4: Use Your Self-Hosted Runner
+- Create .github/workflows/self-hosted.yml
+- Set runs-on: self-hosted
+- Add steps that:
+- Print the hostname of the machine (it should be YOUR machine/VM)
+- Print the working directory
+- Create a file and verify it exists on your machine after the run
+- Trigger it and watch it run on your own hardware
+- Verify: Check your machine — is the file there?
+
+
+#### 1. self-hosted.yml
+
+    name: Self Hosted Runner Demo
+
+    on:
+      push:
+
+    jobs:
+      self-hosted-job:
+        runs-on: self-hosted
+
+        steps:
+          - uses: actions/checkout@v4
+
+          - name: Print Hostname
+            run: hostname
+
+          - name: Print Working Directory
+            run: pwd
+
+          - name: Create a file
+            run: |
+               echo "Hello from my self-hosted runner!" > runner-test.txt
+  
+          - name: Verify file exists
+            run: ls -l runner-test.txt
+
+
+Understanding commands:
+- `runs-on: self-hosted` - send this job to one of my registered runners.
+- `- uses: actions/checkout@v4` - Downloads repository to the runner's working directory.
+- `run: hostname` - Unlike GitHub-hosted runners, this hostname is your own machine or VM.
+- `run: pwd` - This shows where the repository has been checked out on your machine.
+
+
+#### 2. verify the file created on machine
+
+- check the runner workspace on your machine:
+
+      actions-runner/
+      └── _work/
+          └── <repository-name>/
+              └── <repository-name>/
+                  └── runner-test.txt
+
+          cat runner-test.txt
+          o/p:
+          Hello from my self-hosted runner!
+
+----
+
+
+### Task 5: Labels
+- Add a label to your self-hosted runner (e.g., my-linux-runner)
+- Update your workflow to use runs-on: [self-hosted, my-linux-runner]
+- Trigger it — does it still pick up the job?
+- Write in your notes: Why are labels useful when you have multiple self-hosted runners?
+
+
+### Why are Labels useful?
+- Labels allow GitHub to choose which self-hosted runner should execute a workflow.
+- For example, if you have:
+     - WSL Ubuntu runner
+     - AWS EC2 runner
+     - Windows runner
+- you can target a specific one using labels.
+- `runs-on: [self-hosted, aws]` - Runs only on the AWS EC2 runner.
+- You can route jobs based on operating system, installed software, hardware, or location.
+
+
+----
+
+### Task 6: GitHub-Hosted vs Self-Hosted
+
+
+| Feature                 | GitHub-Hosted                                                                              | Self-Hosted                                                                                                                               |
+| ----------------------- | ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| **Who manages it?**     | GitHub manages the runner, OS, updates, and maintenance.                                   | You manage the machine, OS, updates, and maintenance.                                                                                     |
+| **Cost**                | Included with GitHub Actions minutes (subject to plan limits).                             | You pay for and maintain the hardware or cloud VM.                                                                                        |
+| **Pre-installed tools** | Comes with many common tools (Git, Docker, Python, Node.js, Java, etc.).                   | You install and maintain the tools you need.                                                                                              |
+| **Good for**            | General CI/CD, open-source projects, and most workflows without infrastructure management. | Custom environments, private networks, specialized hardware (GPU), long-running jobs, or software not available on GitHub-hosted runners. |
+| **Security concern**    | GitHub secures and isolates the runner; each job gets a fresh VM.                          | You are responsible for securing the machine, patching it, controlling access, and protecting secrets.                                    |
+
+### Summary:
+- GitHub-hosted runners are quick to use, require no maintenance, and are ideal for most CI/CD pipelines.
+- Self-hosted runners provide full control and customization, making them suitable for specialized workloads, private infrastructure, or environments with unique software and hardware requirements.
+
+
+----
+
+### Notes:
+
+### 1. 
