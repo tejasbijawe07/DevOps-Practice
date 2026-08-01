@@ -1,0 +1,21 @@
+name: Self Hosted Runner Demo
+
+on:
+  push:
+
+jobs:
+  self-hosted-job:
+    runs-on: self-hosted
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Print Hostname
+        run: hostname
+
+      - name: Create a file
+        run: |
+          echo "Hello from my self-hosted runner!" > runner-test.txt
+
+      - name: Verify file exists
+        run: ls -l runner-test.txt

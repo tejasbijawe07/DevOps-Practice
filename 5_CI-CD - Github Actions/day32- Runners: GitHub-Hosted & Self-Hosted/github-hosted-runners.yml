@@ -1,0 +1,57 @@
+name: Github Hosted Runners demo
+
+on:
+  push:
+
+jobs:
+  ubuntu-job:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Print OS
+        run: 'echo "Operating System: $RUNNER_OS"'
+
+      - name: Print Hostname
+        run: hostname
+
+      - name: Print Current User
+        run: whoami
+
+  windows-job:
+    runs-on: windows-latest
+
+    steps:
+      - name: Print OS
+        run: 'echo "Operating System: $env:RUNNER_OS"'
+
+      - name: Print Hostname
+        run: hostname
+
+      - name: Print Current User
+        run: whoami
+
+  macos-job:
+    runs-on: macos-latest
+
+    steps:
+      - name: Print OS
+        run: 'echo "Operating System: $RUNNER_OS"'
+
+      - name: Print Hostname
+        run: hostname
+
+      - name: Print Current User
+        run: whoami
+
+  ubuntu-tools:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Print Docker version
+        run: docker --version
+
+      - name: Print Python version
+        run: python3 --version
+
+      - name: Print git version
+        run: git --version
