@@ -225,4 +225,177 @@ understanding the yml file:
 - A step that only runs when the previous step failed
 - A job that only runs on push events, not on pull requests
 - A step with continue-on-error: true — what does this do?
-          
+
+
+
+conditionals.yml:
+
+    name: Conditionals Demo
+
+    on:
+      push:
+      pull_request:
+
+    jobs:
+      demo:
+        runs-on: ubuntu-latest
+
+        steps:
+          - name: Always runs
+            run: echo "This step always runs."
+
+          - name: Run only on main branch
+            if: github.ref == 'refs/heads/main'
+            run: echo "This is the main branch."
+
+          - name: Intentional failure
+            run: exit 1
+            continue-on-error: true
+
+          - name: Run only if previous step failed
+            if: failure()
+            run: echo "The previous step failed."
+
+          - name: Runs after failed step because continue-on-error is true
+            run: echo "Workflow continues even after the failure."
+
+    push-only-job:
+      if: github.event_name == 'push'
+      runs-on: ubuntu-latest
+
+    steps:
+      - name: Run only on push events
+        run: echo "This job runs only for push events."
+
+
+understanding yml file:
+
+#### 1. step runs only on main branch
+
+    if: github.ref == 'refs/heads/main'
+
+ - Executes only when the workflow is triggered from the main branch.
+ - If you push to another branch (e.g., feature/login), this step is skipped.
+
+
+#### 2. Step runs only when a previous step failed
+
+    if: failure()
+
+ - Executes if any earlier step in the current job has failed.
+ - Commonly used for:
+       - Collecting logs
+       - Sending notifications
+       - Uploading debug artifacts
+
+
+#### 3. Job runs only on push events
+
+     if: github.event_name == 'push'
+
+ - Even though the workflow triggers on both: this job executes only for push events and is skipped for pull requests
+
+       on:
+         push:
+         pull_request:
+
+
+#### 4. `continue-on-error: true`
+
+ - Although exit 1 returns an error, the next steps still execute.
+ - Without continue-on-error, the job would stop immediately at the failed step.
+
+
+#### Notes: What does continue-on-error: true do?
+- `continue-on-error: true` allows a step to fail without stopping the job. This is useful for non-critical tasks, such as optional tests, code quality checks, or collecting diagnostics, where you want the workflow to proceed even if that particular step encounters an error.
+
+
+on: push 
+- Workflow trigger (`on:`) — decides when the workflow starts.
+- Job condition (`if:`) — decides whether a specific job runs after the workflow has started.
+
+
+---
+
+### Task 5: Putting It Together
+- Create .github/workflows/smart-pipeline.yml that:
+- Triggers on push to any branch
+- Has a lint job and a test job running in parallel
+- Has a summary job that runs after both, prints whether it's a main branch push or a feature branch push, and prints the commit message.
+
+
+smart-pipeline.yml
+
+    name: Smart Pipeline
+
+    on:
+      push:
+
+    jobs:
+      lint:
+        runs-on: ubuntu-latest
+
+        steps:
+          - name: Lint the application
+            run: echo "Running lint checks..."
+
+       test:
+         runs-on: ubuntu-latest
+
+         steps:
+          - name: Run tests
+            run: echo "Running test cases..."
+
+       summary:
+         runs-on: ubuntu-latest
+         needs:
+          - lint
+          - test
+
+         steps:
+          - name: Print branch information
+            run: |
+              if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+                echo "This is a main branch push."
+              else
+                echo "This is a feature branch push."
+              fi
+
+          - name: Print commit message
+            run: |
+              echo "Commit message:"
+              echo "${{ github.event.head_commit.message }}"
+
+          - name: Print actor and branch
+            run: |
+              echo "Triggered by: ${{ github.actor }}"
+              echo "Branch: ${{ github.ref_name }}"
+
+
+#### 1. Trigger: Runs on every push to any branch.
+
+     on:
+       push:
+
+#### 2. Parallel jobs: Since neither job has a needs dependency, GitHub Actions runs them at the same time.
+
+      jobs:
+        lint:
+        test:
+
+#### 3. Detect the branch
+
+     if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+
+o/p:
+
+    Running lint checks...
+    Running test cases...
+    This is a main branch push.
+    Commit message:
+    Add smart pipeline workflow
+    Triggered by: your-username
+    Branch: main
+
+
+---
