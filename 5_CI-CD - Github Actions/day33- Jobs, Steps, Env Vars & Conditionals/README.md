@@ -154,3 +154,75 @@ commit and push:
 - Write in your notes: Why would you pass outputs between jobs?
 
 
+job-outputs.yml:
+
+
+     name: Job Outputs Demo
+
+     on:
+       push:
+
+     jobs:
+       generate-date:
+         runs-on: ubuntu-latest
+
+         outputs:
+           today: ${{ steps.date.outputs.today }}
+
+         steps:
+           - name: Get today's date
+             id: date
+             run: echo "today=$(date +'%Y-%m-%d')" >> "$GITHUB_OUTPUT"
+
+       print-date:
+         runs-on: ubuntu-latest
+         needs: generate-date
+
+         steps:
+          - name: Print the date received from previous job
+            run: echo "Today's date is ${{ needs.generate-date.outputs.today }}"
+
+
+understanding the yml file:
+ - `generate-date` job:
+      - Executes the date command.
+      - Stores the result as a step output using `$GITHUB_OUTPUT`.
+      - Exposes it as a job output using:
+
+            outputs:
+              today: ${{ steps.date.outputs.today }}
+
+- `print-date` job:
+     - Waits for `generate-date` using:
+
+           needs: generate-date
+       
+     - Reads the job o/p:
+
+           ${{ needs.generate-date.outputs.today }}
+
+
+#### Notes:
+
+#### 1. Why pass outputs between jobs?
+- They allow sharing data between jobs, since each job runs on a separate runner.
+- They avoid recalculating the same value multiple times.
+- They enable conditional workflows, where one job determines information that later jobs use.
+- They make workflows more modular by separating responsibilities.
+- Real-world examples:
+     - Pass a generated Docker image tag from a build job to a deploy job.
+     - Pass a version number created during a release.
+     - Pass the URL of a deployed application to integration tests.
+     - Pass artifact names or IDs for later download or deployment.
+
+
+---
+
+### Task 4: Conditionals
+
+- In a workflow, add:
+- A step that only runs when the branch is main
+- A step that only runs when the previous step failed
+- A job that only runs on push events, not on pull requests
+- A step with continue-on-error: true — what does this do?
+          
