@@ -81,5 +81,158 @@
 
 
 #### Understanding yaml file:
-- `${{ secrets.MY_SECRET_MESSAGE }}` :
-- `-n` :
+- `${{ secrets.MY_SECRET_MESSAGE }}` : accesses the secret.
+- `-n` : checks whether the value is non-empty.
+- if secret exists: `The secret is set: true` and actual secret is not exposed.
+
+
+#### 3. If added secret directly:
+
+    - name: Print secret
+      run: echo "${{ secrets.MY_SECRET_MESSAGE }}"
+
+      o/p:
+      GitHub automatically masks registered secrets in logs.
+      ***
+
+
+### 4. Why should you never print secrets in CI logs?
+- CI logs can potentially be:
+- Viewed by people with repository access
+- Stored/retained
+- Downloaded or copied
+- Included in debugging output
+- Exposed through poorly configured logging
+- Accidentally revealed through scripts or commands.
+- Secrets such as passwords, API keys, tokens, and cloud credentials should never be printed in CI/CD logs because logs may be accessible to other users, retained, downloaded, or accidentally exposed. A leaked secret can allow unauthorized access to applications or infrastructure. GitHub Actions automatically masks many secrets as ***, but developers should still avoid intentionally printing secrets.
+
+
+---
+
+
+### Task 2: Use Secrets as Environment Variables
+- Pass a secret to a step as an environment variable
+- Use it in a shell command without ever hardcoding it
+- Add DOCKER_USERNAME and DOCKER_TOKEN as secrets.
+
+
+#### A Common way to use secrets in GitHub Actions: pass the secret to a step as an environment variable, instead of putting the secret directly into shell command.
+
+
+#### 1. Create github secrets:
+
+- Repository → Settings → Secrets and variables → Actions → New repository secret
+
+      Create:
+      DOCKER_USERNAME
+      Value: 
+      your-dockerhub-username
+      And:
+      DOCKER_TOKEN
+      your-dockerhub-access-token
+
+
+#### 2. Pass the secrets as environment variables:
+
+secrets-env.yml:
+
+    name: Secrets Environment Variables
+
+    on:
+      push:
+        branches:
+          - main
+
+    jobs:
+      docker-secrets:
+        runs-on: ubuntu-latest
+
+        steps:
+          - name: Check Docker credentials
+            env:
+              DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+              DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+            run: |
+              if [ -n "$DOCKER_USERNAME" ]; then
+                echo "Docker username is set: true"
+              else
+                echo "Docker username is set: false"
+              fi
+
+              if [ -n "$DOCKER_TOKEN" ]; then
+                echo "Docker token is set: true"
+              else
+                echo "Docker token is set: false"
+              fi
+
+
+              o/p:
+              Docker username is set: true
+              Docker token is set: true
+
+
+#### Secrets as environment variables: 
+GitHub Actions secrets can be mapped to environment variables using the `env:` section. This allows shell commands and applications to consume credentials without hardcoding them in the workflow. Secrets such as Docker usernames and access tokens should never be printed in CI logs.
+
+
+---
+
+
+### Task 3: Upload Artifacts
+- Create a step that generates a file — e.g., a test report or a log file
+- Use actions/upload-artifact to save it
+- After the workflow runs, download the artifact from the Actions tab
+- Verify: Can you see and download it from GitHub?
+
+
+#### 1. Create workflow- artifact-demo.yml:
+
+     name: Artifact Demo
+
+     on:
+       push:
+          paths:
+            - ".github/workflows/artifact-between-jobs.yml"
+
+     jobs:
+       generate-report:
+          runs-on: ubuntu-latest
+
+          steps:
+           - name: Create reports directory
+             run: mkdir -p reports
+
+           - name: Generate test report
+             run: |
+               echo "Test Report" > reports/test-report.txt
+               echo "----------------" >> reports/test-report.txt
+               echo "Tests Passed: 10" >> reports/test-report.txt
+               echo "Tests Failed: 0" >> reports/test-report.txt
+               echo "Status: SUCCESS" >> reports/test-report.txt
+
+          - name: Display report
+            run: cat reports/test-report.txt
+
+          - name: Upload test report
+            uses: actions/upload-artifact@v4
+            with:
+               name: test-report
+               path: reports/test-report.txt
+
+
+
+#### Understanding yaml file:
+- ` run: mkdir -p reports` - creates repository directory, reports/
+- `reports/test-report.txt` - `>` creates/overwrites the file. `>>` adds another line to the existing file.
+- `cat reports/test-report.txt` - Display the report.
+- `path: reports/test-report.txt`:
+  - `uses: actions/upload-artifact@v4` : GitHub Actions to execute the `upload-artifact` action.
+  - `name: test-report` : name of the artifact.
+  - `path: reports/test-report.txt` : This tells GitHub which file to upload.
+
+          reports/test-report.txt
+                ↓
+          upload-artifact
+                ↓
+          test-report
+
