@@ -236,3 +236,258 @@ GitHub Actions secrets can be mapped to environment variables using the `env:` s
                 ↓
           test-report
 
+
+#### 2. push the changes:
+ - git add .github/workflows/artifact-demo.yml
+ - git commit -m "Add artifact demo"
+ - git push origin main
+
+
+#### 3. find artifact in github:
+
+          Artifacts
+          test-report
+          GitHub will download it as a ZIP file.
+          
+- The file originally exists inside the temporary GitHub Actions runner.
+- When the job finishes, you shouldn't assume that file will remain available on the runner.
+- That's why we upload it: uses: actions/upload-artifact@v4
+
+
+---
+
+
+### Task 4: Download Artifacts Between Jobs
+- Job 1: generate a file and upload it as an artifact
+- Job 2: download the artifact from Job 1 and use it (print its contents)
+- Write in your notes: When would you use artifacts in a real pipeline?
+
+               Job 1: Build
+                   ↓
+               creates file
+                   ↓
+              uploads artifact
+                   ↓
+                Job 2: Test
+                   ↓
+               downloads artifact
+                   ↓
+                uses file
+
+
+#### 1. Create workflow: artifact-between-jobs.yml
+
+
+     name: Artifact Between Jobs
+
+     on:
+       push:
+         branches:
+           - main
+
+     jobs:
+       build:
+         name: Generate File
+         runs-on: ubuntu-latest
+
+         steps:
+           - name: Create build file
+             run: |
+               mkdir -p output
+               echo "Hello from Job 1" > output/build.txt
+               echo "Build completed successfully" >> output/build.txt
+
+           - name: Show generated file
+             run: cat output/build.txt
+
+           - name: Upload build artifact
+             uses: actions/upload-artifact@v4
+             with:
+               name: build-output
+               path: output/build.txt
+
+    test:
+      name: Use Artifact
+      needs: build
+      runs-on: ubuntu-latest
+
+      steps:
+        - name: Download build artifact
+          uses: actions/download-artifact@v4
+          with:
+            name: build-output
+            path: output
+
+        - name: Use downloaded file
+          run: cat output/build.txt
+
+
+#### 2. Understanding yaml:
+
+- to generate a file.
+
+       build:
+         name: Generate File
+         runs-on: ubuntu-latest
+
+- create file.
+
+          output/
+          └── build.txt
+
+           Hello from Job 1
+           Build completed successfully
+
+
+- upload file.
+
+           uses: actions/upload-artifact@v4
+
+- for job 2 `needs: build`, so once build job finishes, test job is started.
+- download artifact and put it inside output directory.
+
+       uses: actions/download-artifact@v4
+
+         Job 1
+          │
+          │ upload
+          ▼
+       GitHub Artifact Storage
+          │
+          │ download
+          ▼
+       Job 2
+
+
+#### 3. Why can't Job 2 just access Job 1's file?
+- Each job normally runs on a separate runner/environment.
+- The artifact acts as the bridge between the two jobs.
+
+              Job 1 Runner
+              ┌─────────────────────┐
+              │ output/build.txt    │
+              └─────────────────────┘
+                     │
+                     │ upload artifact
+                     ▼
+                GitHub Storage
+                     │
+                     │ download
+                     ▼
+               Job 2 Runner
+               ┌─────────────────────┐
+               │ output/build.txt    │
+               └─────────────────────┘
+
+
+#### When would you use artifacts in a real pipeline?
+- Artifacts are useful when a CI/CD pipeline needs to preserve or transfer files between jobs or stages.
+- For example, a build job can create an application package such as a JAR, ZIP, or Docker-related build output and upload it as an artifact. Later test or deployment jobs can download and use the exact same build output instead of rebuilding the application.
+- Artifacts are also useful for storing test reports, code coverage reports, logs, screenshots, and other files that need to be reviewed after a workflow finishes.
+- use of artifacts to pass build outputs or reports between CI/CD jobs and to preserve important files after a workflow completes. For example, I can build an application once, upload the JAR as an artifact, and have later test and deployment jobs download that same artifact.
+
+
+---
+
+
+### Task 5: Run Real Tests in CI
+- Take any script from your earlier days (Python or Shell) and run it in CI:
+- Add your script to the github-actions-practice repo
+- Write a workflow that: Checks out the code
+- Installs any dependencies needed
+- Runs the script
+- Fails the pipeline if the script exits with a non-zero code
+
+
+#### 1. Add script log_analyzer.sh:
+
+
+         #!/bin/bash
+         # Script Name: log_analyzer.sh
+         # Check if log file path argument is provided
+         if [ $# -eq 0 ]; then
+           echo "Error: No log file provided."
+           echo "Usage: $0 <log_file_path>"
+           exit 1
+         fi
+
+        # Store argument in variable
+        LOG_FILE="$1"
+
+        # Check if file exists
+        if [ ! -f "$LOG_FILE" ]; then
+           echo "Error: File '$LOG_FILE' does not exist."
+           exit 1
+        fi
+
+        echo "Log file '$LOG_FILE' found successfully."
+
+
+#### 2. sample log file:
+
+        echo "Application started successfully" > logs/application.log
+
+test locally:
+
+        ./scripts/log_analyzer.sh logs/application.log
+        Log file 'logs/application.log' found successfully.
+
+
+#### 3. workflow file log-analyzer.yml:
+
+              name: Log Analyzer CI
+
+            on:
+               push:
+                 branches:
+                   - main
+               pull_request:
+                 branches:
+                   - main
+
+            jobs:
+              run-log-analyzer:
+                runs-on: ubuntu-latest
+
+                steps:
+                   - name: Checkout repository
+                     uses: actions/checkout@v4
+
+                   - name: Make script executable
+                     run: chmod +x scripts/log_analyzer.sh
+
+                   - name: Run log analyzer
+                     run: ./scripts/log_analyzer.sh logs/application.log
+
+
+#### understanding the yaml file:
+
+- download your repository code onto the GitHub Actions runner:
+
+          - name: Checkout repository
+            uses: actions/checkout@v4
+
+- if script runs successfully:
+
+          exit code 0
+             ↓
+          SUCCESS
+             ↓
+         🟢 Job passed
+
+- if script fails:
+
+         Script
+           ↓
+         exit 1
+           ↓
+         GitHub Actions detects non-zero exit code
+           ↓
+         Step fails
+           ↓
+         Job fails
+           ↓
+         Workflow ❌
+  
+
+---
