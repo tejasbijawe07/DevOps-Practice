@@ -206,4 +206,106 @@ Today we build a complete CI/CD pipeline — code pushed to GitHub automatically
 - Verify: Go to Docker Hub — is your image there with both tags?
 
 
- 
+#### 1. Create Docker hub secrets in Github:
+DOCKER_USERNAME and DOCKER_TOKEN.
+
+
+#### 2. Update docker-publish.yml:
+
+      name: Docker Build and Push
+
+      on:
+        push:
+          branches:
+            - main
+
+      jobs:
+        docker-build-push:
+           runs-on: ubuntu-latest
+
+           steps:
+             - name: Checkout repository
+               uses: actions/checkout@v4
+
+             - name: Log in to Docker Hub
+               uses: docker/login-action@v3
+               with:
+                 username: ${{ secrets.DOCKER_USERNAME }}
+                 password: ${{ secrets.DOCKER_TOKEN }}
+
+             - name: Build Docker image
+               run: docker build -t flask-app:latest .
+
+             - name: Create Docker tags
+               run: |
+                 SHORT_SHA=$(git rev-parse --short HEAD)
+
+                 docker tag flask-app:latest \
+                   ${{ secrets.DOCKER_USERNAME }}/flask-app:latest
+
+                 docker tag flask-app:latest \
+                   ${{ secrets.DOCKER_USERNAME }}/flask-app:sha-$SHORT_SHA
+
+            - name: Push Docker images
+              run: |
+                SHORT_SHA=$(git rev-parse --short HEAD)
+
+                docker push ${{ secrets.DOCKER_USERNAME }}/flask-app:latest
+                docker push ${{ secrets.DOCKER_USERNAME }}/flask-app:sha-$SHORT_SHA
+
+
+#### Understanding the yaml file:
+
+-  `SHORT_SHA=$(git rev-parse --short HEAD)` :
+       - gets the short Git commit SHA.
+       - For example, commit might have:
+
+              a1b2c3d4e5f67890...
+              The short version becomes:
+              a1b2c3d
+
+- `docker tag flask-app:latest \
+  ${{ secrets.DOCKER_USERNAME }}/flask-app:sha-$SHORT_SHA` :
+      - tejas123/flask-app:sha-a1b2c3d
+      - username/flask-app:latest ; username/flask-app:sha-a1b2c3d
+
+
+#### Why use both tags?
+- latest: This is convenient for users who simply want the newest version:
+
+        docker pull username/flask-app:latest
+
+- sha-a1b2c3d: This gives you an immutable reference to a particular Git commit.
+
+        sha-a1b2c3d
+
+- This is better for deployments because we know exactly which source code produced the image.
+
+
+---
+
+### Automated CI/CD pipeline:
+
+          GitHub
+           │
+           │ push to main
+           ▼
+          GitHub Actions
+           │
+           ├── Checkout
+           ├── Docker login
+           ├── Docker build
+           ├── Tag :latest
+           ├── Tag :sha-xxxxxxx
+           ├── Push :latest
+           └── Push :sha-xxxxxxx
+                     │
+                     ▼
+                  Docker Hub
+
+
+- When code is pushed to the main branch, GitHub Actions checks out the source code and builds a Docker image using the Dockerfile.
+- The workflow authenticates with Docker Hub using GitHub Secrets, tags the image with both latest and a commit-specific SHA tag, and pushes both tags to Docker Hub.
+- A deployment machine can then pull the required image and run it as a container. The commit SHA tag provides traceability because we can identify exactly which Git commit produced the running image.
+
+---
