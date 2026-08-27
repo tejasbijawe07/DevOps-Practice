@@ -59,6 +59,7 @@
 
 ---
 
+
 ### Task 2: Create Your First Reusable Workflow
 Create .github/workflows/reusable-build.yml:
 
@@ -74,3 +75,147 @@ Create .github/workflows/reusable-build.yml:
    - Prints Docker token is set: true (never print the actual secret)
 
 Verify: This file alone won't run — it needs a caller. That's next.
+
+
+#### 1. reusable-build.yml
+
+
+      name: Reusable Build
+
+      on:
+       workflow_call:
+          inputs:
+            app_name:
+              description: "Name of the application"
+              required: true
+              type: string
+
+            environment:
+              description: "Target environment"
+              required: true
+              default: staging
+              type: string
+
+          secrets:
+             docker_token:
+               description: "Docker authentication token"
+               required: true
+
+      jobs:
+        build:
+          runs-on: ubuntu-latest
+
+          steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Build application
+              run: |
+                echo "Building ${{ inputs.app_name }} for ${{ inputs.environment }}"
+
+            - name: Check Docker token
+              run: |
+                if [ -n "${{ secrets.docker_token }}" ]; then
+                   echo "Docker token is set: true"
+                else
+                   echo "Docker token is set: false"
+                fi
+
+
+- `workflow_call` → makes this workflow callable by another workflow.
+- `inputs.app_name` → required string supplied by the caller.
+- `inputs.environment` → required string with a default value of staging.
+- `secrets.docker_token` → required secret supplied by the caller.
+- `actions/checkout@v4` → checks out the repository code.
+- `${{ inputs.app_name }}` → reads the input passed by the caller.
+- `${{ secrets.docker_token }}` → accesses the secret, but we only check whether it is non-empty.
+
+
+---
+
+
+### Task 3: Create a Caller Workflow
+Create .github/workflows/call-build.yml:
+
+1. Trigger on push to main
+2. Add a job that uses your reusable workflow:
+
+        jobs:
+          build:
+             uses: ./.github/workflows/reusable-build.yml
+             with:
+               app_name: "my-web-app"
+               environment: "production"
+             secrets:
+               docker_token: ${{ secrets.DOCKER_TOKEN }}
+   
+3. Push to main and watch it run
+
+
+#### 1. call-build.yml
+
+
+    name: Call Reusable Build
+
+    on:
+      workflow_dispatch:
+
+    jobs:
+      build:
+        uses: ./.github/workflows/reusable-build.yml
+        with:
+          app_name: "my-web-app"
+          environment: "production"
+        secrets:
+          docker_token: ${{ secrets.DOCKER_TOKEN }}
+
+
+#### 2.  flow
+
+
+       Caller workflow
+           │
+           │ uses:
+           ▼
+       reusable-build.yml
+           │
+           ├── Checkout
+           ├── Build
+           └── Check secret
+
+
+---
+
+### Composite Action:
+
+- A composite action packages multiple steps into one reusable action.
+- Unlike a reusable workflow, you use it inside `steps:`. Composite actions use an `action.yml` metadata file, `runs.using: composite`, and can expose outputs mapped from step outputs.
+
+        Reusable Workflow
+        → Reuses complete jobs/workflows
+        → Called under jobs.<job_id>.uses
+
+        Composite Action
+        → Reuses multiple steps as one action
+        → Called inside steps using uses:
+
+
+
+### Reusable workflow vs Composite Action:
+
+
+| **Feature**                      | **Reusable Workflow**                                              | **Composite Action**                                                 |
+| -------------------------------- | ------------------------------------------------------------------ | -------------------------------------------------------------------- |
+| **Triggered by**                 | `workflow_call`                                                    | `uses:` in a step                                                    |
+| **Can contain jobs?**            | ✅ Yes, multiple jobs                                               | ❌ No, it runs as part of a job                                       |
+| **Can contain multiple steps?**  | ✅ Yes                                                              | ✅ Yes                                                                |
+| **Lives where?**                 | `.github/workflows/`                                               | `.github/actions/<action-name>/action.yml`                           |
+| **Can accept secrets directly?** | ✅ Yes, using `secrets:`                                            | ❌ No direct `secrets:` declaration; pass secrets as inputs if needed |
+| **Best for**                     | Reusing an **entire CI/CD pipeline** across repositories/workflows | Reusing a **group of steps** within jobs                             |
+
+
+- A reusable workflow is used when we want to reuse complete jobs or CI/CD pipelines, while a composite action is used when we want to package multiple steps into a reusable action.
+- Reusable workflows are called at the job level using `uses:` and `workflow_call`, whereas composite actions are called inside a job's `steps:`.
+
+
+---
