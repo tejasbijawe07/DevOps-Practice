@@ -218,3 +218,13 @@ Create .github/workflows/reusable-build-test.yml:
 
 
 
+         Caller Workflow
+              |
+              | passes node_version + run_tests
+              ↓
+         reusable-build-test.yml
+              |
+              ├── Checkout
+              ├── Setup Node.js
+              ├── npm install
+              └── npm test
