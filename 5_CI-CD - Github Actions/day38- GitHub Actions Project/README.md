@@ -210,19 +210,19 @@ Create .github/workflows/reusable-build-test.yml:
 - Trigger: workflow_call
 - Inputs: `node_version`, `run_tests` (boolean, default: true)
 - Steps:
-   - Check out code
-   - Set up the language runtime
-   - Install dependencies
-   - Run tests (only if `run_tests` is true)
-   - Set output: `test_result` with value `passed` or `failed`
+    - Check out code
+    - Set up the language runtime
+    - Install dependencies
+    - Run tests (only if `run_tests` is true)
+    - Set output: `test_result` with value `passed` or `failed`
 
 
 
-         Caller Workflow
+          Caller Workflow
               |
               | passes node_version + run_tests
               ↓
-         reusable-build-test.yml
+          reusable-build-test.yml
               |
               ├── Checkout
               ├── Setup Node.js
