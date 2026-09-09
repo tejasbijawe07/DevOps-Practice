@@ -210,12 +210,11 @@ Create .github/workflows/reusable-build-test.yml:
 - Trigger: workflow_call
 - Inputs: `node_version`, `run_tests` (boolean, default: true)
 - Steps:
-    - Check out code
-    - Set up the language runtime
-    - Install dependencies
-    - Run tests (only if `run_tests` is true)
-    - Set output: `test_result` with value `passed` or `failed`
-
+- Check out code
+- Set up the language runtime
+- Install dependencies
+- Run tests (only if `run_tests` is true)
+- Set output: `test_result` with value `passed` or `failed`
 
 
           Caller Workflow
@@ -228,3 +227,90 @@ Create .github/workflows/reusable-build-test.yml:
               ├── Setup Node.js
               ├── npm install
               └── npm test
+
+
+#### 1. reusable-build-test.yml:
+
+        name: Reusable Build and Test
+
+        on:
+         workflow_call:
+           inputs:
+             node_version:
+                description: "Node.js version to use"
+                required: true
+                type: string
+
+             run_tests:
+               description: "Whether to run tests"
+               required: false
+               type: boolean
+               default: true
+
+            outputs:
+              test_result:
+              description: "Result of the test execution"
+              value: ${{ jobs.build-test.outputs.test_result }}
+
+    jobs:
+      build-test:
+         runs-on: ubuntu-latest
+
+         outputs:
+           test_result: ${{ steps.test.outputs.result }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node_version }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        id: test
+        if: ${{ inputs.run_tests }}
+        continue-on-error: true
+        run: npm test
+
+         - name: Set test result
+        id: result
+        if: always()
+        run: |
+          if [ "${{ inputs.run_tests }}" = "false" ]; then
+            echo "test_result=passed" >> "$GITHUB_OUTPUT"
+          elif [ "${{ steps.tests.outcome }}" = "success" ]; then
+            echo "test_result=passed" >> "$GITHUB_OUTPUT"
+          else
+            echo "test_result=failed" >> "$GITHUB_OUTPUT"
+          fi
+
+          - name: Fail workflow if tests failed
+        if: ${{ inputs.run_tests && steps.tests.outcome == 'failure' }}
+        run: exit 1
+
+
+#### Understanding the workflow:
+
+- inputs: node-version, run_tests
+- node.js setup : `node-version: ${{ inputs.node_version }}`
+     - takes version supplied by caller.
+- run tests conditionally: `if: ${{ inputs.run_tests }}`
+
+       run_tests = true
+            ↓
+         npm test ✅
+- `continue-on-error: true means:` : If npm test fails, don't immediately kill the job.
+- `outputs:
+  test_result: ${{ steps.result.outputs.test_result }}` :
+
+      Step output
+         ↓
+      Job output
+         ↓
+      Workflow output
