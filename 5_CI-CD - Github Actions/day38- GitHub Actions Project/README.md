@@ -314,3 +314,36 @@ Create .github/workflows/reusable-build-test.yml:
       Job output
          ↓
       Workflow output
+
+
+---
+
+
+### Task 3: Reusable Workflow — Docker Build & Push
+- Create .github/workflows/reusable-docker.yml:
+- Trigger: workflow_call
+- Inputs: image_name (string), tag (string)
+- Secrets: docker_username, docker_token
+- Steps:
+- Check out code
+- Log in to Docker Hub
+- Build and push the image with the given tag
+- Set output: image_url with the full image path
+
+
+we're creating a reusable workflow specifically for Docker image publishing.
+
+          Caller workflow
+                ↓
+          reusable-docker.yml
+                ↓
+           Checkout code
+                ↓
+          Login to Docker Hub
+                ↓
+          Build Docker image
+                ↓
+            Push image
+                ↓
+           Return image_url
+
